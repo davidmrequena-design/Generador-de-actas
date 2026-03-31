@@ -692,13 +692,6 @@ function loadForm(){
   try{
     const saved=JSON.parse(localStorage.getItem('cre_form')||'null');
     if(!saved)return;
-    if(saved.denominacion)document.getElementById('f-denom').value=saved.denominacion;
-    if(saved.fecha){const iso=saved.fecha.split('/').reverse().join('-');document.getElementById('f-fecha').value=iso;}
-    if(saved.hora_inicio)document.getElementById('f-hinicio').value=saved.hora_inicio;
-    if(saved.hora_fin)document.getElementById('f-hfin').value=saved.hora_fin;
-    if(saved.modalidad)document.getElementById('f-modalidad').value=saved.modalidad;
-    if(saved.presidida_por)document.getElementById('f-presidida').value=saved.presidida_por;
-    if(saved.redactado_por)document.getElementById('f-redactado').value=saved.redactado_por;
     if(saved.participants&&saved.participants.length>0){
       saved.participants.forEach(p=>addParticipant(p.nombre,p.cargo,p.asiste));
     }

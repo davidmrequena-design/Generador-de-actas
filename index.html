@@ -685,7 +685,6 @@ function clearMsg(){document.getElementById('err').style.display='none';document
 // Autosave (every 5 seconds)
 function saveForm(){
   const fd=getFormData();
-
   fd.participants=getParticipants();
   localStorage.setItem('cre_form',JSON.stringify(fd));
 }

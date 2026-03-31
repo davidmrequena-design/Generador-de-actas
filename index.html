@@ -18,7 +18,9 @@ input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
 .hdr-logo{height:30px;background:#fff;border-radius:6px;padding:3px 8px;}
 .hdr-title{color:#fff;font-weight:600;font-size:15px;line-height:1.2;}
 .hdr-sub{font-size:10px;color:#7ea8cc;margin-top:2px;}
-#apibar{background:#012a55;padding:8px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#cfg-toggle{background:none;border:none;color:#7ea8cc;font-size:10px;cursor:pointer;padding:4px 20px;display:block;text-align:right;width:100%;font-family:'Montserrat',sans-serif;letter-spacing:.03em;}
+#cfg-toggle:hover{color:#a8c4e0;}
+#apibar{background:#012a55;padding:8px 20px;display:none;align-items:center;gap:10px;flex-wrap:wrap;}
 #apibar label{color:#a8c4e0;font-size:11px;font-weight:500;white-space:nowrap;}
 #apikey{flex:1;min-width:200px;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:12px;outline:none;}
 #apikey::placeholder{color:#6a8aa8;}
@@ -77,9 +79,10 @@ input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
     <img class="hdr-logo" src="data:image/jpeg;base64,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" alt="Cruz Roja">
     <div>
       <div class="hdr-title">Generador de Actas &middot; Cruz Roja Madrid</div>
-      <div class="hdr-sub">Powered by Claude Haiku &middot; Formato Premium &middot; Montserrat &middot; Texto justificado</div>
+      <div class="hdr-sub">Responsable Territorial de Gesti&oacute;n T&eacute;cnica</div>
     </div>
   </div>
+  <button id="cfg-toggle" onclick="toggleCfg()">&#9881;&#65039; Configuraci&oacute;n API</button>
   <div id="apibar">
     <label>&#128273; API Key Anthropic:</label>
     <input type="password" id="apikey" placeholder="sk-ant-api03-..." autocomplete="off">
@@ -118,6 +121,8 @@ input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
       <div class="btn-row">
         <button id="btn-gen" onclick="generate()">&#10024; Generar Acta</button>
         <button id="btn-dl" onclick="downloadDoc()">&#11015; Descargar .doc</button>
+        <button id="btn-email" style="display:none;padding:11px 18px;background:#1a6a3e;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;" onclick="sendEmail()">&#128231; Enviar por email</button>
+        <button id="btn-copy-email" style="display:none;padding:11px 14px;background:#f8fafc;color:#374151;border:1px solid #d1d5db;border-radius:8px;cursor:pointer;font-size:12px;font-weight:500;" onclick="copyEmail()">&#128203; Copiar email</button>
       </div>
     </div>
     <div id="preview-panel">
@@ -186,7 +191,6 @@ function loadImgs(inp){
 
 async function generate(){
   const key=keyEl.value.trim();
-  if(!key){showErr('Introduce tu API Key de Anthropic (sk-ant-api03-...)');return;}
   const txt=document.getElementById('txt').value.trim();
   const hasText=tab!=='images'&&txt;
   const hasImgs=tab==='images'&&imgs.length>0;
@@ -195,6 +199,18 @@ async function generate(){
   const btn=document.getElementById('btn-gen');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generando acta...';
   acta=null;document.getElementById('btn-dl').style.display='none';
+  document.getElementById('btn-email').style.display='none';
+  document.getElementById('btn-copy-email').style.display='none';
+  if(!key){
+    acta=localParse(txt);
+    renderPreview(acta);
+    document.getElementById('btn-dl').style.display='block';
+    document.getElementById('btn-email').style.display='block';
+    document.getElementById('btn-copy-email').style.display='block';
+    showSucc('Acta generada (modo local, sin IA). Configura la API Key para usar Claude.');
+    btn.disabled=false;btn.innerHTML='&#10024; Generar Acta';
+    return;
+  }
   try{
     let content=[];
     if(tab==='images'){
@@ -222,6 +238,8 @@ async function generate(){
     acta=JSON.parse(raw);
     renderPreview(acta);
     document.getElementById('btn-dl').style.display='block';
+    document.getElementById('btn-email').style.display='block';
+    document.getElementById('btn-copy-email').style.display='block';
     showSucc('Acta generada. Pulsa Descargar .doc para abrirla en Word con el formato Cruz Roja.');
   }catch(e){
     let m=e.message;
@@ -295,6 +313,62 @@ function downloadDoc(){
 function showErr(m){const el=document.getElementById('err');el.innerText=m;el.style.display='block';document.getElementById('succ').style.display='none';}
 function showSucc(m){const el=document.getElementById('succ');el.textContent=m;el.style.display='block';document.getElementById('err').style.display='none';}
 function clearMsg(){document.getElementById('err').style.display='none';document.getElementById('succ').style.display='none';}
+
+function toggleCfg(){
+  const bar=document.getElementById('apibar');
+  const open=bar.style.display==='flex';
+  bar.style.display=open?'none':'flex';
+  document.getElementById('cfg-toggle').textContent=open?'⚙️ Configuración API':'⚙️ Ocultar configuración';
+}
+
+function localParse(txt){
+  const a={denominacion:'',fecha:'',hora_inicio:'',hora_fin:'',modalidad:'',presidida_por:'',redactado_por:'David Martin Requena - RT Gesti\xF3n T\xE9cnica',asistentes:[],excusan:[],agenda:[],contenido:[]};
+  const dateM=txt.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if(dateM)a.fecha=dateM[0].replace(/-/g,'/');
+  const lines=txt.split('\n');
+  let curSec=null,curObs=[];
+  lines.forEach(line=>{
+    const t=line.trim();
+    if(t.startsWith('# ')){a.denominacion=t.substring(2).toUpperCase();}
+    else if(t.startsWith('## ')){
+      if(curSec&&curObs.length)a.contenido.push({asunto:curSec,observaciones:curObs.join(' | ')});
+      curSec=t.substring(3).toUpperCase();curObs=[];a.agenda.push(t.substring(3));
+    }else if(t&&curSec){curObs.push(t);}
+  });
+  if(curSec&&curObs.length)a.contenido.push({asunto:curSec,observaciones:curObs.join(' | ')});
+  if(!a.denominacion)a.denominacion='ACTA DE REUNION';
+  if(!a.contenido.length&&txt.trim())a.contenido.push({asunto:'CONTENIDO DE LA REUNION',observaciones:txt.trim().substring(0,500)});
+  return a;
+}
+
+function buildEmailBody(){
+  if(!acta)return{subject:'',body:''};
+  const h=new Date().getHours();
+  const saludo=h<14?'Buenos d\xEDas':'Buenas tardes';
+  const nom=acta.denominacion||'la reuni\xF3n';
+  const fec=acta.fecha||'';
+  const body=saludo+',\n\nAdjunto el acta de '+nom+(fec?', celebrada el '+fec:'')+
+    '.\n\nQuedo a vuestra disposici\xF3n para cualquier duda o aclaraci\xF3n.\n\nUn saludo';
+  const subject='Acta - '+nom+(fec?' - '+fec:'');
+  return{subject,body};
+}
+
+function sendEmail(){
+  const{subject,body}=buildEmailBody();
+  window.location.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+}
+
+function copyEmail(){
+  const{subject,body}=buildEmailBody();
+  const full='Asunto: '+subject+'\n\n'+body;
+  navigator.clipboard.writeText(full).then(()=>{
+    const btn=document.getElementById('btn-copy-email');
+    const orig=btn.innerHTML;btn.innerHTML='&#10003; Copiado';
+    setTimeout(()=>{btn.innerHTML=orig;},2000);
+  }).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  });
+}
 </script>
 </body>
 </html>

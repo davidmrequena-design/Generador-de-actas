@@ -685,7 +685,7 @@ function clearMsg(){document.getElementById('err').style.display='none';document
 // Autosave (every 5 seconds)
 function saveForm(){
   const fd=getFormData();
-  fd.txtContent=document.getElementById('txt').value;
+
   fd.participants=getParticipants();
   localStorage.setItem('cre_form',JSON.stringify(fd));
 }
@@ -700,7 +700,6 @@ function loadForm(){
     if(saved.modalidad)document.getElementById('f-modalidad').value=saved.modalidad;
     if(saved.presidida_por)document.getElementById('f-presidida').value=saved.presidida_por;
     if(saved.redactado_por)document.getElementById('f-redactado').value=saved.redactado_por;
-    if(saved.txtContent)document.getElementById('txt').value=saved.txtContent;
     if(saved.participants&&saved.participants.length>0){
       saved.participants.forEach(p=>addParticipant(p.nombre,p.cargo,p.asiste));
     }

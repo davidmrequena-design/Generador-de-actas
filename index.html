@@ -10,49 +10,102 @@
 :root{--navy:#011e41;--red:#f5333f;--grey:#ededed;--dark:#323232;--brd:#58595b;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Montserrat',system-ui,sans-serif;background:#f0f2f5;min-height:100vh;}
-input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
+input,textarea,button,select{font-family:'Montserrat',system-ui,sans-serif;}
 ::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:#f0f2f5;}
 ::-webkit-scrollbar-thumb{background:#b0bec5;border-radius:3px;}
-#app{max-width:1200px;margin:24px auto 40px;box-shadow:0 2px 20px rgba(0,0,0,.12);border-radius:12px;overflow:hidden;}
-#hdr{background:var(--navy);border-bottom:3px solid var(--red);padding:12px 20px;display:flex;align-items:center;gap:12px;}
-.hdr-logo{height:30px;background:#fff;border-radius:6px;padding:3px 8px;}
-.hdr-title{color:#fff;font-weight:600;font-size:15px;line-height:1.2;}
+::-webkit-scrollbar-thumb:hover{background:#78909c;}
+#app{max-width:1300px;margin:24px auto 40px;box-shadow:0 2px 24px rgba(0,0,0,.14);border-radius:14px;overflow:hidden;}
+#hdr{background:var(--navy);border-bottom:3px solid var(--red);padding:14px 22px;display:flex;align-items:center;gap:14px;}
+.hdr-logo{height:32px;background:#fff;border-radius:7px;padding:3px 8px;}
+.hdr-title{color:#fff;font-weight:700;font-size:16px;line-height:1.2;}
 .hdr-sub{font-size:10px;color:#7ea8cc;margin-top:2px;}
 #apibar{background:#012a55;padding:8px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 #apibar label{color:#a8c4e0;font-size:11px;font-weight:500;white-space:nowrap;}
-#apikey{flex:1;min-width:200px;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:12px;outline:none;}
+#apikey{flex:1;min-width:200px;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:12px;outline:none;transition:border-color .2s;}
 #apikey::placeholder{color:#6a8aa8;}
 #apikey:focus{border-color:rgba(255,255,255,.5);}
 .key-hint{color:#6a8aa8;font-size:10px;}
+/* BODY LAYOUT */
 #body{display:grid;grid-template-columns:1fr;background:#fff;}
-#body.has-preview{grid-template-columns:42% 58%;}
-#input-panel{padding:20px;}
+#body.has-preview{grid-template-columns:44% 56%;}
+#input-panel{padding:18px 20px;overflow-y:auto;max-height:calc(100vh - 100px);}
 #body.has-preview #input-panel{border-right:1px solid #e5e7eb;}
-.tabs{display:flex;gap:7px;margin-bottom:14px;}
+/* COLLAPSIBLE SECTIONS */
+.section{border:1px solid #e5e7eb;border-radius:10px;margin-bottom:12px;overflow:hidden;}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f8fafc;cursor:pointer;user-select:none;transition:background .15s;}
+.sec-hdr:hover{background:#f1f5f9;}
+.sec-title{font-size:12px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:7px;}
+.sec-title .sec-icon{font-size:14px;}
+.sec-arrow{font-size:11px;color:#6b7280;transition:transform .25s;}
+.sec-arrow.open{transform:rotate(180deg);}
+.sec-body{padding:14px;border-top:1px solid #e5e7eb;display:none;}
+.sec-body.open{display:block;}
+/* FORM GRID */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-grid .full{grid-column:1/-1;}
+.form-field{display:flex;flex-direction:column;gap:4px;}
+.form-field label{font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;}
+.form-field input,.form-field select{padding:7px 10px;border:1px solid #d1d5db;border-radius:7px;font-size:12px;color:var(--dark);outline:none;transition:border-color .2s;background:#fff;}
+.form-field input:focus,.form-field select:focus{border-color:var(--navy);}
+/* PARTICIPANTS */
+.contacts-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:#e8eef5;color:var(--navy);font-size:11px;font-weight:500;cursor:pointer;border:1px solid #c8d8e8;transition:all .15s;}
+.chip:hover{background:var(--navy);color:#fff;}
+.chip .chip-del{font-size:9px;opacity:.6;margin-left:2px;}
+.chip .chip-del:hover{opacity:1;}
+.participant-list{display:flex;flex-direction:column;gap:6px;}
+.participant-row{display:flex;align-items:center;gap:7px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:7px 10px;}
+.participant-row input{flex:1;padding:5px 8px;border:1px solid #e5e7eb;border-radius:5px;font-size:11px;color:var(--dark);outline:none;background:#fff;}
+.participant-row input:focus{border-color:var(--navy);}
+.participant-row label{font-size:10px;color:#6b7280;display:flex;align-items:center;gap:3px;cursor:pointer;white-space:nowrap;}
+.participant-row .del-btn{padding:3px 7px;background:transparent;border:1px solid #fca5a5;color:#dc2626;border-radius:5px;font-size:11px;cursor:pointer;transition:all .15s;}
+.participant-row .del-btn:hover{background:#fee2e2;}
+.btn-add-p{padding:6px 14px;background:transparent;border:1px dashed #94a3b8;color:#6b7280;border-radius:7px;font-size:11px;cursor:pointer;transition:all .15s;margin-top:6px;}
+.btn-add-p:hover{border-color:var(--navy);color:var(--navy);}
+/* CONTENT TABS */
+.tabs{display:flex;gap:7px;margin-bottom:12px;}
 .tab{padding:7px 14px;border-radius:8px;border:1px solid #d1d5db;background:#f9fafb;color:#374151;cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;}
 .tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
 .tab:hover:not(.active){background:#f1f5f9;}
-.upload-zone{min-height:140px;border:2px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:#f9fafb;padding:20px;transition:border-color .2s;text-align:center;}
+.upload-zone{min-height:120px;border:2px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:#f9fafb;padding:20px;transition:border-color .2s;text-align:center;}
 .upload-zone:hover{border-color:var(--navy);}
-.zone-icon{font-size:32px;}
+.zone-icon{font-size:30px;}
 .zone-lbl{font-size:13px;color:#6b7280;}
 .zone-sub{font-size:11px;color:#9ca3af;}
-.ok-badge{font-size:11px;color:#15803d;background:#dcfce7;padding:3px 10px;border-radius:20px;}
-#txt{width:100%;min-height:240px;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;resize:vertical;line-height:1.6;color:var(--dark);outline:none;font-family:'Montserrat',sans-serif;}
+.ok-badge{font-size:11px;color:#15803d;background:#dcfce7;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;}
+#txt{width:100%;min-height:200px;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;resize:vertical;line-height:1.6;color:var(--dark);outline:none;font-family:'Montserrat',sans-serif;}
 #txt:focus{border-color:var(--navy);}
-#img-thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center;}
-.thumb{height:65px;border-radius:6px;border:1px solid #e5e7eb;object-fit:cover;}
-.btn-row{display:flex;gap:8px;margin-top:14px;}
-#btn-gen{flex:1;padding:11px;background:var(--red);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:opacity .15s;}
+#img-thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:flex-start;}
+.thumb-wrap{position:relative;display:inline-block;}
+.thumb{height:65px;width:65px;border-radius:6px;border:1px solid #e5e7eb;object-fit:cover;display:block;}
+.thumb-del{position:absolute;top:-5px;right:-5px;width:18px;height:18px;background:var(--red);color:#fff;border-radius:50%;border:none;cursor:pointer;font-size:11px;line-height:18px;text-align:center;font-weight:700;display:none;}
+.thumb-wrap:hover .thumb-del{display:block;}
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+#btn-gen{flex:1;min-width:140px;padding:11px;background:var(--red);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:opacity .15s,background .2s;}
 #btn-gen:disabled{background:#94a3b8;cursor:not-allowed;}
 #btn-gen:not(:disabled):hover{opacity:.88;}
-#btn-dl{display:none;padding:11px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;}
+#btn-dl{padding:11px 16px;background:var(--navy);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:opacity .15s;display:none;}
 #btn-dl:hover{opacity:.88;}
+#btn-pdf{padding:11px 16px;background:#374151;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:opacity .15s;display:none;}
+#btn-pdf:hover{opacity:.88;}
+/* MESSAGES */
 #err{display:none;color:#dc2626;font-size:12px;margin-top:10px;padding:8px 12px;background:#fee2e2;border-radius:8px;line-height:1.5;white-space:pre-line;}
 #succ{display:none;color:#15803d;font-size:11px;margin-top:10px;padding:8px 12px;background:#dcfce7;border-radius:8px;}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
-#preview-panel{display:none;padding:18px;overflow-y:auto;max-height:700px;background:#f8fafc;border-left:1px solid #e5e7eb;}
+/* EMAIL SECTION */
+.email-field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;}
+.email-field label{font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;}
+.email-field input,.email-field textarea{padding:8px 10px;border:1px solid #d1d5db;border-radius:7px;font-size:12px;color:var(--dark);outline:none;transition:border-color .2s;font-family:'Montserrat',sans-serif;}
+.email-field input:focus,.email-field textarea:focus{border-color:var(--navy);}
+.email-field textarea{min-height:100px;resize:vertical;line-height:1.5;}
+.copy-btns{display:flex;gap:7px;flex-wrap:wrap;}
+.copy-btn{padding:6px 14px;background:#f8fafc;border:1px solid #d1d5db;color:#374151;border-radius:7px;font-size:11px;cursor:pointer;transition:all .15s;font-weight:500;}
+.copy-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+/* PREVIEW PANEL */
+#preview-panel{display:none;padding:18px;overflow-y:auto;max-height:88vh;background:#f8fafc;border-left:1px solid #e5e7eb;}
 .pvl{font-size:10px;color:#6b7280;font-weight:600;letter-spacing:.06em;margin-bottom:10px;}
 #pc{font-family:'Montserrat',Arial,sans-serif;font-size:12px;}
 #pc .logo-bar{display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:2px solid var(--navy);margin-bottom:12px;}
@@ -69,6 +122,22 @@ input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
 #pc .co{color:var(--dark);text-align:justify;font-size:10px;vertical-align:top;}
 #pc .co.alt{background:var(--grey);}
 #pc p{margin:0;line-height:1.4;}#pc p+p{margin-top:3px;}
+#pc .img-gallery{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+#pc .img-gallery img{height:80px;border-radius:4px;border:1px solid #e5e7eb;object-fit:cover;}
+/* RESPONSIVE */
+@media (max-width:900px){
+  #body.has-preview{grid-template-columns:1fr;}
+  #input-panel{max-height:none;}
+  #preview-panel{border-left:none;border-top:2px solid #e5e7eb;max-height:none;}
+}
+/* PRINT STYLES */
+@media print{
+  #hdr,#apibar,#input-panel,#succ,#err{display:none!important;}
+  #app{max-width:100%;margin:0;box-shadow:none;border-radius:0;}
+  #body{display:block!important;}
+  #preview-panel{display:block!important;padding:0;max-height:none;border:none;background:#fff;}
+  .pvl{display:none;}
+}
 </style>
 </head>
 <body>
@@ -77,55 +146,157 @@ input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
     <img class="hdr-logo" src="data:image/jpeg;base64,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" alt="Cruz Roja">
     <div>
       <div class="hdr-title">Generador de Actas &middot; Cruz Roja Madrid</div>
-      <div class="hdr-sub">Powered by Claude Haiku &middot; Formato Premium &middot; Montserrat &middot; Texto justificado</div>
+      <div class="hdr-sub">Responsable Territorial de Gesti&oacute;n T&eacute;cnica &middot; Powered by Claude Haiku &middot; Montserrat</div>
     </div>
   </div>
   <div id="apibar">
     <label>&#128273; API Key Anthropic:</label>
-    <input type="password" id="apikey" placeholder="sk-ant-api03-..." autocomplete="off">
-    <span class="key-hint">Obtén tu clave en <a href="https://console.anthropic.com" target="_blank" style="color:#7ea8cc;">console.anthropic.com</a> &rarr; API Keys</span>
+    <input type="password" id="apikey" placeholder="sk-ant-api03-... (opcional)" autocomplete="off">
+    <span class="key-hint" id="key-hint-text">Sin clave → modo local sin IA &nbsp;|&nbsp; Con clave → <a href="https://console.anthropic.com" target="_blank" style="color:#7ea8cc;">console.anthropic.com</a></span>
   </div>
   <div id="body">
     <div id="input-panel">
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('text',this)">&#128221; Texto</button>
-        <button class="tab" onclick="switchTab('docx',this)">&#128196; Word</button>
-        <button class="tab" onclick="switchTab('images',this)">&#128247; Im&aacute;genes</button>
-      </div>
-      <div id="pane-text">
-        <textarea id="txt" placeholder="Pega aqui la transcripcion de la reunion...&#10;&#10;Cuanto mas detallada, mejor quedara el acta."></textarea>
-      </div>
-      <div id="pane-docx" style="display:none">
-        <div class="upload-zone" onclick="document.getElementById('f-docx').click()">
-          <span class="zone-icon">&#128196;</span>
-          <span class="zone-lbl">Haz clic para subir un Word (.docx)</span>
-          <span class="zone-sub">El texto se extrae automaticamente</span>
-          <span id="docx-ok" class="ok-badge" style="display:none">&#10003; Cargado</span>
+
+      <!-- SECTION: Datos de la reunión -->
+      <div class="section">
+        <div class="sec-hdr" onclick="toggleSection('sec-datos')">
+          <span class="sec-title"><span class="sec-icon">&#128197;</span> Datos de la Reunión</span>
+          <span class="sec-arrow open" id="arr-sec-datos">&#9660;</span>
         </div>
-        <input id="f-docx" type="file" accept=".docx" style="display:none" onchange="loadDocx(this)">
-      </div>
-      <div id="pane-images" style="display:none">
-        <div class="upload-zone" onclick="document.getElementById('f-imgs').click()">
-          <span class="zone-icon">&#128247;</span>
-          <span class="zone-lbl">Sube fotos de tus notas o cuadernos</span>
-          <span class="zone-sub">JPG / PNG, m&uacute;ltiples im&aacute;genes</span>
+        <div class="sec-body open" id="sec-datos">
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>Denominación / Título de la Reunión *</label>
+              <input type="text" id="f-den" placeholder="Ej: Reunión mensual equipo técnico" required>
+            </div>
+            <div class="form-field">
+              <label>Fecha</label>
+              <input type="date" id="f-fecha">
+            </div>
+            <div class="form-field">
+              <label>Modalidad</label>
+              <select id="f-modal">
+                <option value="Presencial">Presencial</option>
+                <option value="Videoconferencia">Videoconferencia</option>
+                <option value="Híbrida">Híbrida</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Hora inicio</label>
+              <input type="time" id="f-hinicio">
+            </div>
+            <div class="form-field">
+              <label>Hora fin</label>
+              <input type="time" id="f-hfin">
+            </div>
+            <div class="form-field full">
+              <label>Presidida por</label>
+              <input type="text" id="f-preside" placeholder="Nombre – Cargo">
+            </div>
+            <div class="form-field full">
+              <label>Redactado por</label>
+              <input type="text" id="f-redacta" value="David Martin Requena – RT Gesti&#243;n T&#233;cnica">
+            </div>
+          </div>
         </div>
-        <input id="f-imgs" type="file" accept="image/*" multiple style="display:none" onchange="loadImgs(this)">
-        <div id="img-thumbs"></div>
       </div>
+
+      <!-- SECTION: Participantes -->
+      <div class="section">
+        <div class="sec-hdr" onclick="toggleSection('sec-part')">
+          <span class="sec-title"><span class="sec-icon">&#128101;</span> Participantes</span>
+          <span class="sec-arrow" id="arr-sec-part">&#9660;</span>
+        </div>
+        <div class="sec-body" id="sec-part">
+          <div id="contacts-area" style="margin-bottom:10px;display:none;">
+            <div style="font-size:10px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Contactos guardados — clic para añadir</div>
+            <div class="contacts-chips" id="contacts-chips"></div>
+          </div>
+          <div class="participant-list" id="participant-list"></div>
+          <button class="btn-add-p" onclick="addParticipantRow('','',true)">+ Añadir participante</button>
+          <button class="btn-add-p" style="margin-left:6px;" onclick="saveCurrentParticipants()">&#128190; Guardar como contactos</button>
+        </div>
+      </div>
+
+      <!-- SECTION: Contenido -->
+      <div class="section">
+        <div class="sec-hdr" onclick="toggleSection('sec-content')">
+          <span class="sec-title"><span class="sec-icon">&#128221;</span> Contenido de la Reunión</span>
+          <span class="sec-arrow open" id="arr-sec-content">&#9660;</span>
+        </div>
+        <div class="sec-body open" id="sec-content">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab('text',this)">&#128221; Texto</button>
+            <button class="tab" onclick="switchTab('docx',this)">&#128196; Word</button>
+            <button class="tab" onclick="switchTab('images',this)">&#128247; Im&aacute;genes</button>
+          </div>
+          <div id="pane-text">
+            <textarea id="txt" placeholder="Pega aquí la transcripción o notas de la reunión...&#10;&#10;Puedes usar # para marcar títulos de sección:&#10;# PUNTO 1 - BIENVENIDA&#10;Se dio inicio a la reunión...&#10;&#10;# PUNTO 2 - REVISIÓN DE ACUERDOS&#10;Se revisaron los acuerdos pendientes...&#10;&#10;Cuanto más detallado, mejor quedará el acta."></textarea>
+          </div>
+          <div id="pane-docx" style="display:none">
+            <div class="upload-zone" onclick="document.getElementById('f-docx').click()">
+              <span class="zone-icon">&#128196;</span>
+              <span class="zone-lbl">Haz clic para subir un Word (.docx)</span>
+              <span class="zone-sub">El texto se extrae automáticamente</span>
+              <span id="docx-ok" class="ok-badge" style="display:none">&#10003; Documento cargado correctamente</span>
+            </div>
+            <input id="f-docx" type="file" accept=".docx" style="display:none" onchange="loadDocx(this)">
+          </div>
+          <div id="pane-images" style="display:none">
+            <div class="upload-zone" onclick="document.getElementById('f-imgs').click()">
+              <span class="zone-icon">&#128247;</span>
+              <span class="zone-lbl">Sube fotos de tus notas o pizarras</span>
+              <span class="zone-sub">JPG / PNG · múltiples imágenes · clic en × para eliminar</span>
+            </div>
+            <input id="f-imgs" type="file" accept="image/*" multiple style="display:none" onchange="loadImgs(this)">
+            <div id="img-thumbs"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
       <div id="err"></div>
       <div id="succ"></div>
+
+      <!-- ACTION BUTTONS -->
       <div class="btn-row">
-        <button id="btn-gen" onclick="generate()">&#10024; Generar Acta</button>
-        <button id="btn-dl" onclick="downloadDoc()">&#11015; Descargar .doc</button>
+        <button id="btn-gen" onclick="generate()">&#128065; Vista previa</button>
+        <button id="btn-dl" onclick="downloadDoc()">&#11015; .doc</button>
+        <button id="btn-pdf" onclick="exportPDF()">&#128438; PDF</button>
       </div>
-    </div>
+
+      <!-- SECTION: Email -->
+      <div class="section" id="email-section" style="display:none;margin-top:14px;">
+        <div class="sec-hdr" onclick="toggleSection('sec-email')">
+          <span class="sec-title"><span class="sec-icon">&#128140;</span> Email de convocatoria / resumen</span>
+          <span class="sec-arrow open" id="arr-sec-email">&#9660;</span>
+        </div>
+        <div class="sec-body open" id="sec-email">
+          <div class="email-field">
+            <label>Asunto</label>
+            <input type="text" id="email-subject" readonly>
+          </div>
+          <div class="email-field">
+            <label>Cuerpo del email</label>
+            <textarea id="email-body" rows="7"></textarea>
+          </div>
+          <div class="copy-btns">
+            <button class="copy-btn" onclick="copyEmail('subject')">&#128203; Copiar asunto</button>
+            <button class="copy-btn" onclick="copyEmail('body')">&#128203; Copiar cuerpo</button>
+            <button class="copy-btn" onclick="copyEmail('all')">&#128203; Copiar todo</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /input-panel -->
+
     <div id="preview-panel">
       <div class="pvl">VISTA PREVIA</div>
       <div id="pc"></div>
     </div>
-  </div>
-</div>
+  </div><!-- /body -->
+</div><!-- /app -->
+
 <script>
 const NAVY="#011e41",RED="#f5333f",GREY="#ededed",DARK="#323232",BRD="#58595b";
 const LOGO="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";
@@ -138,12 +309,52 @@ Primera mencion: nombre completo + siglas entre parentesis. Siguientes: solo sig
 Campos ausentes: null o []. Multiples subtemas en observaciones: separar con |
 JSON: {"denominacion":"NOMBRE","fecha":"DD/MM/YYYY","hora_inicio":"HH:MM","hora_fin":"HH:MM","modalidad":"Videoconferencia / Presencial","presidida_por":"Nombre - Cargo","redactado_por":"David Martin Requena - RT Gestion Tecnica","asistentes":[{"nombre":"...","cargo":"..."}],"excusan":[{"nombre":"...","cargo":"..."}],"agenda":["Tema 1"],"contenido":[{"asunto":"TITULO MAYUSCULAS","observaciones":"Texto..."}]}`;
 
-let tab='text',imgs=[],acta=null;
+let tab='text', imgs=[], acta=null;
 const keyEl=document.getElementById('apikey');
-const saved=localStorage.getItem('cre_ant_key');
-if(saved)keyEl.value=saved;
-keyEl.addEventListener('input',()=>localStorage.setItem('cre_ant_key',keyEl.value.trim()));
 
+/* ─── INIT ─────────────────────────────────────────────── */
+(function init(){
+  // Restore API key
+  const savedKey=localStorage.getItem('cre_ant_key');
+  if(savedKey)keyEl.value=savedKey;
+  keyEl.addEventListener('input',()=>{
+    localStorage.setItem('cre_ant_key',keyEl.value.trim());
+    updateButtonLabel();
+  });
+
+  // Set default date to today
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('f-fecha').value=today;
+
+  // Restore form from localStorage
+  loadFromStorage();
+
+  // Update button label based on api key
+  updateButtonLabel();
+
+  // Load saved contacts
+  renderContacts();
+
+  // Autosave every 5s
+  setInterval(saveToStorage,5000);
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();generate();}
+    if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();if(acta)downloadDoc();}
+  });
+})();
+
+/* ─── SECTIONS ──────────────────────────────────────────── */
+function toggleSection(id){
+  const body=document.getElementById(id);
+  const arr=document.getElementById('arr-'+id);
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  arr.classList.toggle('open',!isOpen);
+}
+
+/* ─── TABS ──────────────────────────────────────────────── */
 function switchTab(t,btn){
   tab=t;
   ['text','docx','images'].forEach((id,i)=>{
@@ -153,110 +364,429 @@ function switchTab(t,btn){
   clearMsg();
 }
 
+/* ─── WORD UPLOAD ───────────────────────────────────────── */
 async function loadDocx(inp){
   const f=inp.files[0];if(!f)return;clearMsg();
   try{
     const ab=await f.arrayBuffer();
     const r=await mammoth.extractRawText({arrayBuffer:ab});
     document.getElementById('txt').value=r.value;
-    document.getElementById('docx-ok').style.display='inline-block';
+    document.getElementById('docx-ok').style.display='inline-flex';
     switchTab('text',document.querySelectorAll('.tab')[0]);
+    saveToStorage();
   }catch(e){showErr('Error leyendo Word: '+e.message);}
 }
 
+/* ─── IMAGE UPLOAD ──────────────────────────────────────── */
 function loadImgs(inp){
-  imgs=[];
   const files=Array.from(inp.files);
   const thumbs=document.getElementById('img-thumbs');
-  thumbs.innerHTML='';
   Promise.all(files.map(f=>new Promise(res=>{
     const r=new FileReader();
     r.onload=()=>{
       imgs.push({data:r.result.split(',')[1],type:f.type,url:r.result});
-      const img=document.createElement('img');img.src=r.result;img.className='thumb';
-      thumbs.appendChild(img);res();
+      const idx=imgs.length-1;
+      const wrap=document.createElement('div');
+      wrap.className='thumb-wrap';
+      wrap.dataset.idx=idx;
+      const img=document.createElement('img');
+      img.src=r.result;img.className='thumb';
+      const del=document.createElement('button');
+      del.className='thumb-del';del.textContent='×';
+      del.onclick=()=>removeImg(wrap,idx);
+      wrap.appendChild(img);wrap.appendChild(del);
+      thumbs.appendChild(wrap);res();
     };r.readAsDataURL(f);
   }))).then(()=>{
-    const s=document.createElement('span');
-    s.style.cssText='font-size:12px;color:#15803d;align-self:center;';
-    s.textContent=imgs.length+' imagen'+(imgs.length>1?'es':'')+' lista'+(imgs.length>1?'s':'');
-    thumbs.appendChild(s);
+    inp.value='';
   });
 }
 
+function removeImg(wrap,idx){
+  imgs.splice(idx,1);
+  wrap.remove();
+  // Re-index remaining wrappers
+  document.querySelectorAll('.thumb-wrap').forEach((w,i)=>{
+    w.dataset.idx=i;
+    w.querySelector('.thumb-del').onclick=()=>removeImg(w,i);
+  });
+}
+
+/* ─── PARTICIPANTS ──────────────────────────────────────── */
+let participants=[];
+
+function addParticipantRow(name,cargo,asiste){
+  const idx=participants.length;
+  participants.push({nombre:name||'',cargo:cargo||'',asiste:asiste!==false});
+  const row=document.createElement('div');
+  row.className='participant-row';
+  row.dataset.idx=idx;
+  row.innerHTML=`
+    <input type="text" placeholder="Nombre completo" value="${escHtml(name||'')}" onchange="participants[${idx}].nombre=this.value;saveToStorage()">
+    <input type="text" placeholder="Cargo" value="${escHtml(cargo||'')}" onchange="participants[${idx}].cargo=this.value;saveToStorage()" style="flex:.7;">
+    <label><input type="checkbox" ${asiste!==false?'checked':''} onchange="participants[${idx}].asiste=this.checked;saveToStorage()"> Asiste</label>
+    <button class="del-btn" onclick="removeParticipantRow(this.closest('.participant-row'))">✕</button>
+  `;
+  document.getElementById('participant-list').appendChild(row);
+  saveToStorage();
+}
+
+function removeParticipantRow(row){
+  const idx=parseInt(row.dataset.idx);
+  participants.splice(idx,1);
+  row.remove();
+  // Re-render remaining rows with correct indices
+  rebuildParticipantRows();
+  saveToStorage();
+}
+
+function rebuildParticipantRows(){
+  const list=document.getElementById('participant-list');
+  list.innerHTML='';
+  const saved=participants.slice();
+  participants=[];
+  saved.forEach(p=>addParticipantRow(p.nombre,p.cargo,p.asiste));
+}
+
+function saveCurrentParticipants(){
+  const valid=participants.filter(p=>p.nombre.trim());
+  if(!valid.length){showErr('No hay participantes con nombre para guardar.');return;}
+  const existing=JSON.parse(localStorage.getItem('cre_contacts')||'[]');
+  valid.forEach(p=>{
+    const key=p.nombre.trim()+':'+p.cargo.trim();
+    if(!existing.find(c=>c.nombre===p.nombre.trim()&&c.cargo===p.cargo.trim())){
+      existing.push({nombre:p.nombre.trim(),cargo:p.cargo.trim()});
+    }
+  });
+  localStorage.setItem('cre_contacts',JSON.stringify(existing));
+  renderContacts();
+  showSucc('Participantes guardados como contactos rápidos.');
+}
+
+function renderContacts(){
+  const contacts=JSON.parse(localStorage.getItem('cre_contacts')||'[]');
+  const area=document.getElementById('contacts-area');
+  const chips=document.getElementById('contacts-chips');
+  chips.innerHTML='';
+  if(!contacts.length){area.style.display='none';return;}
+  area.style.display='block';
+  contacts.forEach((c,i)=>{
+    const chip=document.createElement('span');
+    chip.className='chip';
+    chip.innerHTML=escHtml(c.nombre+(c.cargo?' · '+c.cargo:''))+' <span class="chip-del" title="Eliminar contacto" onclick="deleteContact('+i+');event.stopPropagation()">×</span>';
+    chip.onclick=()=>addParticipantRow(c.nombre,c.cargo,true);
+    chips.appendChild(chip);
+  });
+}
+
+function deleteContact(idx){
+  const contacts=JSON.parse(localStorage.getItem('cre_contacts')||'[]');
+  contacts.splice(idx,1);
+  localStorage.setItem('cre_contacts',JSON.stringify(contacts));
+  renderContacts();
+}
+
+/* ─── AUTOSAVE ──────────────────────────────────────────── */
+function saveToStorage(){
+  const data={
+    den:document.getElementById('f-den').value,
+    fecha:document.getElementById('f-fecha').value,
+    hinicio:document.getElementById('f-hinicio').value,
+    hfin:document.getElementById('f-hfin').value,
+    modal:document.getElementById('f-modal').value,
+    preside:document.getElementById('f-preside').value,
+    redacta:document.getElementById('f-redacta').value,
+    txt:document.getElementById('txt').value,
+    participants:participants
+  };
+  localStorage.setItem('cre_form',JSON.stringify(data));
+}
+
+function loadFromStorage(){
+  try{
+    const raw=localStorage.getItem('cre_form');
+    if(!raw)return;
+    const d=JSON.parse(raw);
+    if(d.den)document.getElementById('f-den').value=d.den;
+    if(d.fecha)document.getElementById('f-fecha').value=d.fecha;
+    if(d.hinicio)document.getElementById('f-hinicio').value=d.hinicio;
+    if(d.hfin)document.getElementById('f-hfin').value=d.hfin;
+    if(d.modal)document.getElementById('f-modal').value=d.modal;
+    if(d.preside)document.getElementById('f-preside').value=d.preside;
+    if(d.redacta)document.getElementById('f-redacta').value=d.redacta;
+    if(d.txt)document.getElementById('txt').value=d.txt;
+    if(d.participants&&d.participants.length){
+      d.participants.forEach(p=>addParticipantRow(p.nombre,p.cargo,p.asiste));
+    }
+  }catch(e){}
+}
+
+/* ─── BUTTON LABEL ──────────────────────────────────────── */
+function updateButtonLabel(){
+  const btn=document.getElementById('btn-gen');
+  if(keyEl.value.trim()){
+    btn.innerHTML='&#10024; Generar Acta con IA';
+  }else{
+    btn.innerHTML='&#128065; Vista previa';
+  }
+}
+
+/* ─── GENERATE ──────────────────────────────────────────── */
 async function generate(){
   const key=keyEl.value.trim();
-  if(!key){showErr('Introduce tu API Key de Anthropic (sk-ant-api03-...)');return;}
   const txt=document.getElementById('txt').value.trim();
   const hasText=tab!=='images'&&txt;
   const hasImgs=tab==='images'&&imgs.length>0;
-  if(!hasText&&!hasImgs){showErr('Introduce una transcripcion o sube imagenes.');return;}
-  clearMsg();
-  const btn=document.getElementById('btn-gen');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generando acta...';
-  acta=null;document.getElementById('btn-dl').style.display='none';
-  try{
-    let content=[];
-    if(tab==='images'){
-      imgs.forEach(i=>content.push({type:'image',source:{type:'base64',media_type:i.type,data:i.data}}));
-      content.push({type:'text',text:'Transcribe y estructura el acta. SOLO JSON valido, sin backticks.'});
-    }else{
-      content.push({type:'text',text:'Estructura esta transcripcion como acta de Cruz Roja Madrid. SOLO JSON valido sin backticks:\n\n'+txt});
+
+  if(key){
+    // AI mode
+    if(!hasText&&!hasImgs){showErr('Introduce una transcripción o sube imágenes.');return;}
+    clearMsg();
+    const btn=document.getElementById('btn-gen');
+    btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generando acta...';
+    acta=null;
+    document.getElementById('btn-dl').style.display='none';
+    document.getElementById('btn-pdf').style.display='none';
+    try{
+      let content=[];
+      const formCtx=buildFormContext();
+      if(tab==='images'){
+        imgs.forEach(i=>content.push({type:'image',source:{type:'base64',media_type:i.type,data:i.data}}));
+        content.push({type:'text',text:'Transcribe y estructura el acta. Usa estos datos del formulario si están disponibles:\n'+formCtx+'\nSOLO JSON valido, sin backticks.'});
+      }else{
+        content.push({type:'text',text:'Estructura esta transcripcion como acta de Cruz Roja Madrid. Datos del formulario (usa si se proporcionan):\n'+formCtx+'\nSOLO JSON valido sin backticks:\n\n'+txt});
+      }
+      const resp=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key':key,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true'
+        },
+        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:3000,system:SYS,messages:[{role:'user',content}]})
+      });
+      if(!resp.ok){
+        const er=await resp.json().catch(()=>({}));
+        throw new Error(er.error?.message||'Error HTTP '+resp.status);
+      }
+      const data=await resp.json();
+      const raw=(data.content?.find(c=>c.type==='text')?.text||'{}').replace(/```json|```/g,'').trim();
+      acta=JSON.parse(raw);
+      // Merge form data into acta (form takes precedence for metadata)
+      mergeFormIntoActa(acta);
+      renderPreview(acta);
+      document.getElementById('btn-dl').style.display='inline-block';
+      document.getElementById('btn-pdf').style.display='inline-block';
+      document.getElementById('email-section').style.display='block';
+      generateEmailContent(acta);
+      showSucc('✓ Acta generada con IA. Pulsa .doc para descargar en formato Word o PDF para imprimir.');
+    }catch(e){
+      let m=e.message;
+      if(m.includes('401')||m.includes('authentication'))m='API Key incorrecta. Comprueba que la has copiado completa desde console.anthropic.com';
+      else if(m.includes('credit')||m.includes('billing'))m='Crédito agotado. Recarga en console.anthropic.com → Billing';
+      showErr(m);
     }
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':key,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:3000,system:SYS,messages:[{role:'user',content}]})
-    });
-    if(!resp.ok){
-      const er=await resp.json().catch(()=>({}));
-      throw new Error(er.error?.message||'Error HTTP '+resp.status);
+    btn.disabled=false;
+    updateButtonLabel();
+  }else{
+    // Local mode (no API key)
+    if(!hasText&&!hasImgs&&!document.getElementById('f-den').value.trim()){
+      showErr('Introduce datos en el formulario o contenido de la reunión.');return;
     }
-    const data=await resp.json();
-    const raw=(data.content?.find(c=>c.type==='text')?.text||'{}').replace(/```json|```/g,'').trim();
-    acta=JSON.parse(raw);
+    clearMsg();
+    acta=localGenerate(txt);
     renderPreview(acta);
-    document.getElementById('btn-dl').style.display='block';
-    showSucc('Acta generada. Pulsa Descargar .doc para abrirla en Word con el formato Cruz Roja.');
-  }catch(e){
-    let m=e.message;
-    if(m.includes('401')||m.includes('authentication'))m='API Key incorrecta. Comprueba que la has copiado completa desde console.anthropic.com';
-    else if(m.includes('credit')||m.includes('billing'))m='Credito agotado. Recarga en console.anthropic.com -> Billing';
-    showErr(m);
+    document.getElementById('btn-dl').style.display='inline-block';
+    document.getElementById('btn-pdf').style.display='inline-block';
+    document.getElementById('email-section').style.display='block';
+    generateEmailContent(acta);
+    showSucc('✓ Vista previa generada (modo local, sin IA). Añade tu API Key para generar con IA.');
   }
-  btn.disabled=false;btn.innerHTML='&#10024; Generar Acta';
 }
 
-function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function buildFormContext(){
+  const d=getFormData();
+  let ctx='';
+  if(d.denominacion)ctx+='denominacion: '+d.denominacion+'\n';
+  if(d.fecha)ctx+='fecha: '+d.fecha+'\n';
+  if(d.hora_inicio)ctx+='hora_inicio: '+d.hora_inicio+'\n';
+  if(d.hora_fin)ctx+='hora_fin: '+d.hora_fin+'\n';
+  if(d.modalidad)ctx+='modalidad: '+d.modalidad+'\n';
+  if(d.presidida_por)ctx+='presidida_por: '+d.presidida_por+'\n';
+  if(d.redactado_por)ctx+='redactado_por: '+d.redactado_por+'\n';
+  if(participants.length){
+    const asistentes=participants.filter(p=>p.asiste&&p.nombre).map(p=>p.nombre+(p.cargo?' - '+p.cargo:''));
+    const excusan=participants.filter(p=>!p.asiste&&p.nombre).map(p=>p.nombre+(p.cargo?' - '+p.cargo:''));
+    if(asistentes.length)ctx+='asistentes: '+asistentes.join(', ')+'\n';
+    if(excusan.length)ctx+='excusan: '+excusan.join(', ')+'\n';
+  }
+  return ctx||'(sin datos de formulario)';
+}
 
+function getFormData(){
+  const fechaRaw=document.getElementById('f-fecha').value;
+  let fechaFmt='';
+  if(fechaRaw){
+    const [y,m,d]=fechaRaw.split('-');
+    fechaFmt=d+'/'+m+'/'+y;
+  }
+  return {
+    denominacion:document.getElementById('f-den').value.trim().toUpperCase(),
+    fecha:fechaFmt,
+    hora_inicio:document.getElementById('f-hinicio').value,
+    hora_fin:document.getElementById('f-hfin').value,
+    modalidad:document.getElementById('f-modal').value,
+    presidida_por:document.getElementById('f-preside').value.trim(),
+    redactado_por:document.getElementById('f-redacta').value.trim()||'David Martin Requena - RT Gesti\u00f3n T\u00e9cnica'
+  };
+}
+
+function mergeFormIntoActa(a){
+  const fd=getFormData();
+  if(fd.denominacion)a.denominacion=fd.denominacion;
+  if(fd.fecha)a.fecha=fd.fecha;
+  if(fd.hora_inicio)a.hora_inicio=fd.hora_inicio;
+  if(fd.hora_fin)a.hora_fin=fd.hora_fin;
+  if(fd.modalidad)a.modalidad=fd.modalidad;
+  if(fd.presidida_por)a.presidida_por=fd.presidida_por;
+  a.redactado_por=fd.redactado_por;
+  // Merge participants from form
+  if(participants.length){
+    a.asistentes=participants.filter(p=>p.asiste&&p.nombre).map(p=>({nombre:p.nombre,cargo:p.cargo}));
+    a.excusan=participants.filter(p=>!p.asiste&&p.nombre).map(p=>({nombre:p.nombre,cargo:p.cargo}));
+  }
+}
+
+/* ─── LOCAL GENERATE (no API) ───────────────────────────── */
+function localGenerate(txt){
+  const fd=getFormData();
+  const asistentes=participants.filter(p=>p.asiste&&p.nombre).map(p=>({nombre:p.nombre,cargo:p.cargo}));
+  const excusan=participants.filter(p=>!p.asiste&&p.nombre).map(p=>({nombre:p.nombre,cargo:p.cargo}));
+
+  // Parse content sections
+  const contenido=[];
+  const agenda=[];
+
+  if(txt){
+    // Split by # headers
+    const sections=txt.split(/\n#{1,3}\s+/);
+    sections.forEach((sec,i)=>{
+      if(!sec.trim())return;
+      const lines=sec.trim().split('\n');
+      const title=lines[0].trim().toUpperCase();
+      const body=lines.slice(1).join('\n').trim();
+      if(i===0&&!txt.startsWith('#')){
+        // No header sections - split by double newline
+        const paras=txt.split(/\n\n+/).filter(p=>p.trim());
+        paras.forEach((p,j)=>{
+          const pLines=p.trim().split('\n');
+          const ptitle=pLines[0].trim().toUpperCase().slice(0,60)+(pLines[0].length>60?'...':'');
+          const pbody=pLines.length>1?pLines.slice(1).join(' ').trim():p.trim();
+          agenda.push(ptitle);
+          contenido.push({asunto:ptitle,observaciones:pbody||p.trim()});
+        });
+        return;
+      }
+      if(title){
+        agenda.push(title.slice(0,60));
+        contenido.push({asunto:title.slice(0,60),observaciones:body||'Se trató este punto del orden del día.'});
+      }
+    });
+  }
+
+  if(!contenido.length){
+    agenda.push('REUNIÓN '+(fd.denominacion||''));
+    contenido.push({asunto:'DESARROLLO DE LA REUNIÓN',observaciones:'Se celebró la reunión conforme al orden del día establecido.'});
+  }
+
+  return {
+    denominacion:fd.denominacion||'REUNIÓN',
+    fecha:fd.fecha,
+    hora_inicio:fd.hora_inicio,
+    hora_fin:fd.hora_fin,
+    modalidad:fd.modalidad,
+    presidida_por:fd.presidida_por,
+    redactado_por:fd.redactado_por,
+    asistentes,
+    excusan,
+    agenda,
+    contenido
+  };
+}
+
+/* ─── EMAIL ─────────────────────────────────────────────── */
+function generateEmailContent(a){
+  const subject='Acta de reunión – '+(a.denominacion||'')+(a.fecha?' – '+a.fecha:'');
+  document.getElementById('email-subject').value=subject;
+
+  const asistentes=(a.asistentes||[]).map(x=>x.nombre+(x.cargo?' ('+x.cargo+')':'')).join('\n  - ');
+  const body=`Estimados/as compañeros/as,
+
+Les remito el acta de la reunión celebrada.
+
+Denominación: ${a.denominacion||''}
+Fecha: ${a.fecha||''}${a.hora_inicio?' a las '+a.hora_inicio+' h':''}${a.hora_fin?' – '+a.hora_fin+' h':''}
+Modalidad: ${a.modalidad||''}${a.presidida_por?'\nPresidida por: '+a.presidida_por:''}
+
+Asistentes:
+  - ${asistentes||'(ver documento adjunto)'}
+
+Quedo a disposición para cualquier aclaración.
+
+Un cordial saludo,
+${a.redactado_por||'David Martin Requena \u2013 RT Gesti\u00f3n T\u00e9cnica'}`;
+
+  document.getElementById('email-body').value=body;
+}
+
+function copyEmail(what){
+  let text='';
+  if(what==='subject')text=document.getElementById('email-subject').value;
+  else if(what==='body')text=document.getElementById('email-body').value;
+  else text='Asunto: '+document.getElementById('email-subject').value+'\n\n'+document.getElementById('email-body').value;
+  navigator.clipboard.writeText(text).then(()=>{
+    showSucc('✓ Copiado al portapapeles.');
+  }).catch(()=>{
+    showErr('No se pudo copiar. Selecciona el texto manualmente.');
+  });
+}
+
+/* ─── HELPERS ───────────────────────────────────────────── */
+function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escHtml(s){return String(s||'').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+/* ─── RENDER PREVIEW ────────────────────────────────────── */
 function renderPreview(a){
   document.getElementById('body').classList.add('has-preview');
   document.getElementById('preview-panel').style.display='block';
   const meta=[
-    ['Denominacion','<b>'+e((a.denominacion||'').toUpperCase())+'</b>',false],
-    ['Fecha y Horario','Fecha: '+e(a.fecha||'')+' · '+e(a.hora_inicio||'')+(a.hora_fin?' – '+e(a.hora_fin):'')+' h',true],
+    ['Denominación','<b>'+e((a.denominacion||'').toUpperCase())+'</b>',false],
+    ['Fecha y Horario','Fecha: '+e(a.fecha||'')+' · '+e(a.hora_inicio||'')+(a.hora_fin?' – '+e(a.hora_fin):'')+(a.hora_inicio?' h':''),true],
     ['Modalidad',e(a.modalidad||''),false],
     ['Presidida por',e(a.presidida_por||''),true],
     ['Redactado por',e(a.redactado_por||''),false],
   ].map(([l,v,alt])=>'<tr><td class="tl">'+l+'</td><td class="tv'+(alt?' alt':'')+'">'+v+'</td></tr>').join('');
   const asi=(a.asistentes||[]).map(x=>e(x.nombre+(x.cargo?' – '+x.cargo:''))).join(' · ');
-  const exc=(a.excusan||[]).map(x=>e(x.nombre)).join(', ');
-  const aRow='<tr><td class="tl">Asistentes<br><small style="font-weight:400;font-size:9px;">Excusan</small></td><td class="tv">'+asi+(exc?'<div style="font-size:9px;color:#666;margin-top:2px"><em>Excusan: </em>'+exc+'</div>':'')+'</td></tr>';
+  const exc=(a.excusan||[]).map(x=>e(x.nombre+(x.cargo?' – '+x.cargo:''))).join(', ');
+  const aRow='<tr><td class="tl">Asistentes<br><small style="font-weight:400;font-size:9px;">Excusan asistencia</small></td><td class="tv">'+asi+(exc?'<div style="font-size:9px;color:#666;margin-top:2px"><em>Excusan: </em>'+exc+'</div>':'')+'</td></tr>';
   const ag=(a.agenda||[]).map((x,i)=>'<div class="agi">'+(i+1)+'. '+e(x)+'</div>').join('');
   const rows=(a.contenido||[]).map((row,i)=>'<tr><td class="ca">'+e((row.asunto||'').toUpperCase())+'</td><td class="co'+(i%2?' alt':'')+'">'+e(row.observaciones||'').split('|').map(l=>'<p>'+l.trim()+'</p>').join('')+'</td></tr>').join('');
+  // Images gallery
+  let gallery='';
+  if(imgs.length){
+    gallery='<div style="margin-top:10px;"><div style="font-size:10px;color:#6b7280;font-weight:600;letter-spacing:.04em;margin-bottom:6px;">IMÁGENES ADJUNTAS</div><div class="img-gallery">'+imgs.map(i=>'<img src="data:'+i.type+';base64,'+i.data+'" alt="">').join('')+'</div></div>';
+  }
   document.getElementById('pc').innerHTML=
     '<div class="logo-bar"><img class="pv-logo" src="data:image/jpeg;base64,'+LOGO+'" alt="CRE"><span style="font-size:10px;color:#6b7280;">'+e(a.fecha||'')+'</span></div>'+
     '<table>'+meta+aRow+'</table>'+
-    '<div class="agt">Orden del dia – Temas tratados</div>'+ag+
+    '<div class="agt">Orden del día – Temas tratados</div>'+ag+
     '<div style="margin:8px 0;"></div>'+
-    '<table><tr><th class="ch" style="width:27%">ASUNTO</th><th class="ch">OBSERVACIONES</th></tr>'+rows+'</table>';
+    '<table><tr><th class="ch" style="width:27%">ASUNTO</th><th class="ch">OBSERVACIONES</th></tr>'+rows+'</table>'+
+    gallery;
 }
 
+/* ─── DOWNLOAD DOC ──────────────────────────────────────── */
 function downloadDoc(){
   if(!acta)return;const a=acta;
   const lbl='font-family:Montserrat,Arial;font-size:9pt;color:#fff;font-weight:bold;';
@@ -269,6 +799,8 @@ function downloadDoc(){
   const ag=(a.agenda||[]).map((x,i)=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:1pt 0;">'+(i+1)+'.&nbsp;&nbsp;'+e(x)+'</p>').join('');
   const asi=(a.asistentes||[]).map(x=>e(x.nombre)+(x.cargo?' &ndash; '+e(x.cargo):'')).join('<br/>');
   const exc=(a.excusan||[]).map(x=>e(x.nombre)+(x.cargo?' &ndash; '+e(x.cargo):'')).join('<br/>');
+  // Images in doc
+  const imgHtml=imgs.length?'<p style="font-family:Montserrat,Arial;font-size:10pt;font-weight:bold;color:'+NAVY+';margin:10pt 0 4pt 0;">Im&aacute;genes adjuntas</p>'+imgs.map((i,n)=>'<img src="data:'+i.type+';base64,'+i.data+'" alt="Imagen adjunta '+(n+1)+'" style="max-width:180pt;max-height:120pt;margin:3pt;border:0.5pt solid #ccc;"/>').join(''):'';
   const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>@page{size:21cm 29.7cm;margin:3.3cm 2.0cm 1.9cm 2.0cm;}body{font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';margin:0;}table{border-collapse:collapse;}p{margin:0;line-height:1.3;}</style></head><body>'+
     '<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:6pt;border-bottom:1.5pt solid '+NAVY+';margin-bottom:10pt;"><img src="data:image/jpeg;base64,'+LOGO+'" style="height:26pt;" alt="Cruz Roja"/><span style="font-family:Montserrat,Arial;font-size:9pt;color:'+BRD+';">'+e(a.fecha||'')+'</span></div>'+
     '<p style="margin:4pt 0;">&nbsp;</p>'+
@@ -284,7 +816,7 @@ function downloadDoc(){
     '<p style="margin:10pt 0;">&nbsp;</p>'+
     '<table style="width:482pt;border-collapse:collapse;">'+
     '<tr><td style="width:128pt;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">ASUNTO</p></td><td style="width:354pt;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">OBSERVACIONES</p></td></tr>'+rows+
-    '</table></body></html>';
+    '</table>'+imgHtml+'</body></html>';
   const blob=new Blob(['\ufeff',doc],{type:'application/msword'});
   const url=URL.createObjectURL(blob);
   const el=document.createElement('a');el.href=url;
@@ -292,6 +824,23 @@ function downloadDoc(){
   el.download='Acta_'+den+'_'+(a.fecha||'').replace(/\//g,'-')+'.doc';
   document.body.appendChild(el);el.click();document.body.removeChild(el);URL.revokeObjectURL(url);
 }
+
+/* ─── EXPORT PDF ─────────────────────────────────────────── */
+function exportPDF(){
+  if(!acta)return;
+  const win=window.open('','_blank','width=900,height=700');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Acta PDF</title>'+
+    '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">'+
+    '<style>@page{size:A4;margin:2cm;}body{font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';-webkit-print-color-adjust:exact;print-color-adjust:exact;}table{width:100%;border-collapse:collapse;margin-bottom:10pt;}td,th{border:0.5pt solid '+BRD+';padding:5pt 7pt;font-size:9pt;}@media screen{body{max-width:21cm;margin:20px auto;padding:0 20px;}}@media print{.no-print{display:none!important;}}</style></head><body>'+
+    '<div class="no-print" style="background:#f0f2f5;padding:12px;margin-bottom:16px;border-radius:8px;display:flex;gap:10px;align-items:center;">'+
+    '<button onclick="window.print()" style="padding:8px 20px;background:#011e41;color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:Montserrat,Arial;font-weight:600;">🖨️ Imprimir / Guardar como PDF</button>'+
+    '<span style="font-size:12px;color:#6b7280;">Usa "Guardar como PDF" en el diálogo de impresión</span></div>'+
+    document.getElementById('pc').innerHTML+
+    '</body></html>');
+  win.document.close();
+}
+
+/* ─── MESSAGES ───────────────────────────────────────────── */
 function showErr(m){const el=document.getElementById('err');el.innerText=m;el.style.display='block';document.getElementById('succ').style.display='none';}
 function showSucc(m){const el=document.getElementById('succ');el.textContent=m;el.style.display='block';document.getElementById('err').style.display='none';}
 function clearMsg(){document.getElementById('err').style.display='none';document.getElementById('succ').style.display='none';}

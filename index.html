@@ -10,49 +10,109 @@
 :root{--navy:#011e41;--red:#f5333f;--grey:#ededed;--dark:#323232;--brd:#58595b;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Montserrat',system-ui,sans-serif;background:#f0f2f5;min-height:100vh;}
-input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
+input,textarea,button,select{font-family:'Montserrat',system-ui,sans-serif;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-thumb{background:#b0bec5;border-radius:3px;}
 #app{max-width:1200px;margin:24px auto 40px;box-shadow:0 2px 20px rgba(0,0,0,.12);border-radius:12px;overflow:hidden;}
+/* HEADER */
 #hdr{background:var(--navy);border-bottom:3px solid var(--red);padding:12px 20px;display:flex;align-items:center;gap:12px;}
 .hdr-logo{height:30px;background:#fff;border-radius:6px;padding:3px 8px;}
 .hdr-title{color:#fff;font-weight:600;font-size:15px;line-height:1.2;}
 .hdr-sub{font-size:10px;color:#7ea8cc;margin-top:2px;}
-#apibar{background:#012a55;padding:8px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+/* API CONFIG BAR */
+#api-toggle-bar{background:#011e41;padding:6px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.1);}
+#btn-api-toggle{background:transparent;border:1px solid rgba(255,255,255,.2);color:#a8c4e0;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;transition:all .15s;}
+#btn-api-toggle:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.4);}
+#apibar{background:#012a55;padding:8px 20px;display:none;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.1);}
+#apibar.visible{display:flex;}
 #apibar label{color:#a8c4e0;font-size:11px;font-weight:500;white-space:nowrap;}
 #apikey{flex:1;min-width:200px;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:12px;outline:none;}
 #apikey::placeholder{color:#6a8aa8;}
 #apikey:focus{border-color:rgba(255,255,255,.5);}
 .key-hint{color:#6a8aa8;font-size:10px;}
+/* MAIN BODY */
 #body{display:grid;grid-template-columns:1fr;background:#fff;}
-#body.has-preview{grid-template-columns:42% 58%;}
+#body.has-preview{grid-template-columns:45% 55%;}
 #input-panel{padding:20px;}
 #body.has-preview #input-panel{border-right:1px solid #e5e7eb;}
+/* COLLAPSIBLE SECTIONS */
+.section-wrap{margin-bottom:14px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;}
+.section-hdr{background:#f8fafc;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;font-size:13px;font-weight:600;color:var(--navy);}
+.section-hdr:hover{background:#f1f5f9;}
+.section-arrow{transition:transform .2s;font-size:10px;color:#9ca3af;}
+.section-hdr.open .section-arrow{transform:rotate(90deg);}
+.section-body{padding:14px;display:none;}
+.section-body.open{display:block;}
+/* FORM FIELDS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+.field-wrap{display:flex;flex-direction:column;gap:4px;}
+.field-wrap.full{grid-column:1/-1;}
+.field-label{font-size:11px;font-weight:500;color:#374151;}
+.field-inp{padding:7px 10px;border:1px solid #d1d5db;border-radius:7px;font-size:12px;color:var(--dark);outline:none;width:100%;}
+.field-inp:focus{border-color:var(--navy);}
+select.field-inp{cursor:pointer;}
+/* PARTICIPANTS */
+#parti-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.parti-row{display:grid;grid-template-columns:1fr 1fr auto auto;gap:6px;align-items:center;}
+.parti-row input{padding:6px 8px;border:1px solid #d1d5db;border-radius:6px;font-size:11px;font-family:'Montserrat',sans-serif;outline:none;width:100%;}
+.parti-row input:focus{border-color:var(--navy);}
+.parti-check{width:16px;height:16px;cursor:pointer;accent-color:var(--navy);}
+.btn-del-parti{background:none;border:none;cursor:pointer;color:#ef4444;font-size:15px;padding:2px 6px;line-height:1;}
+.btn-del-parti:hover{color:#dc2626;}
+.btn-add-parti{padding:6px 12px;background:#f1f5f9;border:1px dashed #94a3b8;border-radius:7px;cursor:pointer;font-size:11px;color:#475569;font-weight:500;width:100%;margin-bottom:8px;}
+.btn-add-parti:hover{background:#e2e8f0;}
+/* CONTACTS CHIPS */
+#contacts-area{margin-bottom:6px;}
+.contacts-label{font-size:10px;color:#6b7280;margin-bottom:4px;}
+#contacts-chips{display:flex;flex-wrap:wrap;gap:4px;}
+.chip{padding:3px 10px;background:#e0e7ff;color:#3730a3;border-radius:20px;font-size:10px;cursor:pointer;display:flex;align-items:center;gap:4px;border:none;}
+.chip:hover{background:#c7d2fe;}
+.chip-del{color:#6366f1;font-weight:700;background:none;border:none;cursor:pointer;font-size:12px;line-height:1;padding:0 0 0 2px;}
+.chip-del:hover{color:#4338ca;}
+/* TABS */
 .tabs{display:flex;gap:7px;margin-bottom:14px;}
 .tab{padding:7px 14px;border-radius:8px;border:1px solid #d1d5db;background:#f9fafb;color:#374151;cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;}
 .tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
 .tab:hover:not(.active){background:#f1f5f9;}
-.upload-zone{min-height:140px;border:2px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:#f9fafb;padding:20px;transition:border-color .2s;text-align:center;}
+/* UPLOAD */
+.upload-zone{min-height:120px;border:2px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:#f9fafb;padding:20px;transition:border-color .2s;text-align:center;}
 .upload-zone:hover{border-color:var(--navy);}
 .zone-icon{font-size:32px;}
 .zone-lbl{font-size:13px;color:#6b7280;}
 .zone-sub{font-size:11px;color:#9ca3af;}
 .ok-badge{font-size:11px;color:#15803d;background:#dcfce7;padding:3px 10px;border-radius:20px;}
-#txt{width:100%;min-height:240px;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;resize:vertical;line-height:1.6;color:var(--dark);outline:none;font-family:'Montserrat',sans-serif;}
+#txt{width:100%;min-height:200px;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;resize:vertical;line-height:1.6;color:var(--dark);outline:none;font-family:'Montserrat',sans-serif;}
 #txt:focus{border-color:var(--navy);}
 #img-thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center;}
 .thumb{height:65px;border-radius:6px;border:1px solid #e5e7eb;object-fit:cover;}
-.btn-row{display:flex;gap:8px;margin-top:14px;}
-#btn-gen{flex:1;padding:11px;background:var(--red);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:opacity .15s;}
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+#btn-gen{flex:1;padding:11px;background:var(--red);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:opacity .15s;min-width:160px;}
 #btn-gen:disabled{background:#94a3b8;cursor:not-allowed;}
 #btn-gen:not(:disabled):hover{opacity:.88;}
 #btn-dl{display:none;padding:11px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;}
 #btn-dl:hover{opacity:.88;}
+#btn-pdf{display:none;padding:11px 18px;background:#374151;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;}
+#btn-pdf:hover{opacity:.88;}
+/* EMAIL BUTTONS */
+#email-area{display:none;margin-top:12px;padding:12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;}
+.email-label{font-size:11px;color:#0369a1;font-weight:600;margin-bottom:8px;}
+.email-btns{display:flex;gap:8px;flex-wrap:wrap;}
+#btn-email{padding:8px 14px;background:#0369a1;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;}
+#btn-email:hover{opacity:.88;}
+#btn-copy-email{padding:8px 14px;background:#fff;color:#0369a1;border:1px solid #0369a1;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;}
+#btn-copy-email:hover{background:#f0f9ff;}
+/* MESSAGES */
 #err{display:none;color:#dc2626;font-size:12px;margin-top:10px;padding:8px 12px;background:#fee2e2;border-radius:8px;line-height:1.5;white-space:pre-line;}
 #succ{display:none;color:#15803d;font-size:11px;margin-top:10px;padding:8px 12px;background:#dcfce7;border-radius:8px;}
+/* SPINNER */
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
-#preview-panel{display:none;padding:18px;overflow-y:auto;max-height:700px;background:#f8fafc;border-left:1px solid #e5e7eb;}
+/* PREVIEW PANEL */
+#preview-panel{display:none;padding:18px;overflow-y:auto;background:#f8fafc;border-left:1px solid #e5e7eb;position:relative;}
+#btn-close-preview{position:absolute;top:10px;right:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:13px;padding:3px 9px;color:#475569;font-weight:600;z-index:10;}
+#btn-close-preview:hover{background:#e2e8f0;}
 .pvl{font-size:10px;color:#6b7280;font-weight:600;letter-spacing:.06em;margin-bottom:10px;}
 #pc{font-family:'Montserrat',Arial,sans-serif;font-size:12px;}
 #pc .logo-bar{display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:2px solid var(--navy);margin-bottom:12px;}
@@ -69,6 +129,26 @@ input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
 #pc .co{color:var(--dark);text-align:justify;font-size:10px;vertical-align:top;}
 #pc .co.alt{background:var(--grey);}
 #pc p{margin:0;line-height:1.4;}#pc p+p{margin-top:3px;}
+/* RESPONSIVE */
+@media(max-width:900px){
+  #body.has-preview{grid-template-columns:1fr;}
+  #body.has-preview #input-panel{border-right:none;border-bottom:1px solid #e5e7eb;}
+  .form-grid{grid-template-columns:1fr;}
+  .form-grid.cols-3{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .form-grid,.form-grid.cols-3{grid-template-columns:1fr;}
+  .parti-row{grid-template-columns:1fr auto auto auto;}
+  .btn-row{flex-direction:column;}
+}
+/* PRINT */
+@media print{
+  #api-toggle-bar,#apibar,#input-panel,#btn-close-preview{display:none!important;}
+  #body{display:block!important;}
+  #body.has-preview{display:block!important;}
+  #preview-panel{display:block!important;padding:0;border:none;overflow:visible;}
+  #app{box-shadow:none;margin:0;border-radius:0;}
+}
 </style>
 </head>
 <body>
@@ -77,50 +157,129 @@ input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
     <img class="hdr-logo" src="data:image/jpeg;base64,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" alt="Cruz Roja">
     <div>
       <div class="hdr-title">Generador de Actas &middot; Cruz Roja Madrid</div>
-      <div class="hdr-sub">Powered by Claude Haiku &middot; Formato Premium &middot; Montserrat &middot; Texto justificado</div>
+      <div class="hdr-sub">Responsable Territorial de Gesti&oacute;n T&eacute;cnica</div>
     </div>
+  </div>
+  <div id="api-toggle-bar">
+    <button id="btn-api-toggle" onclick="toggleApiBar()">&#9881;&#65039; Configuraci&oacute;n API</button>
   </div>
   <div id="apibar">
     <label>&#128273; API Key Anthropic:</label>
     <input type="password" id="apikey" placeholder="sk-ant-api03-..." autocomplete="off">
-    <span class="key-hint">Obtén tu clave en <a href="https://console.anthropic.com" target="_blank" style="color:#7ea8cc;">console.anthropic.com</a> &rarr; API Keys</span>
+    <span class="key-hint">Obt&eacute;n tu clave en <a href="https://console.anthropic.com" target="_blank" style="color:#7ea8cc;">console.anthropic.com</a> &rarr; API Keys</span>
   </div>
   <div id="body">
     <div id="input-panel">
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('text',this)">&#128221; Texto</button>
-        <button class="tab" onclick="switchTab('docx',this)">&#128196; Word</button>
-        <button class="tab" onclick="switchTab('images',this)">&#128247; Im&aacute;genes</button>
-      </div>
-      <div id="pane-text">
-        <textarea id="txt" placeholder="Pega aqui la transcripcion de la reunion...&#10;&#10;Cuanto mas detallada, mejor quedara el acta."></textarea>
-      </div>
-      <div id="pane-docx" style="display:none">
-        <div class="upload-zone" onclick="document.getElementById('f-docx').click()">
-          <span class="zone-icon">&#128196;</span>
-          <span class="zone-lbl">Haz clic para subir un Word (.docx)</span>
-          <span class="zone-sub">El texto se extrae automaticamente</span>
-          <span id="docx-ok" class="ok-badge" style="display:none">&#10003; Cargado</span>
+      <!-- DATOS DE LA REUNIÓN -->
+      <div class="section-wrap">
+        <div class="section-hdr open" onclick="toggleSection(this)" id="hdr-datos">
+          <span>&#128197; Datos de la Reuni&oacute;n</span>
+          <span class="section-arrow">&#9658;</span>
         </div>
-        <input id="f-docx" type="file" accept=".docx" style="display:none" onchange="loadDocx(this)">
-      </div>
-      <div id="pane-images" style="display:none">
-        <div class="upload-zone" onclick="document.getElementById('f-imgs').click()">
-          <span class="zone-icon">&#128247;</span>
-          <span class="zone-lbl">Sube fotos de tus notas o cuadernos</span>
-          <span class="zone-sub">JPG / PNG, m&uacute;ltiples im&aacute;genes</span>
+        <div class="section-body open" id="body-datos">
+          <div class="form-grid">
+            <div class="field-wrap full">
+              <label class="field-label">Denominaci&oacute;n / T&iacute;tulo</label>
+              <input type="text" id="f-denom" class="field-inp" placeholder="Nombre de la reuni&oacute;n...">
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Fecha</label>
+              <input type="date" id="f-fecha" class="field-inp">
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Modalidad</label>
+              <select id="f-modalidad" class="field-inp">
+                <option>Presencial</option>
+                <option>Videoconferencia</option>
+                <option>H&iacute;brida</option>
+              </select>
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Hora inicio</label>
+              <input type="time" id="f-hinicio" class="field-inp">
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Hora fin</label>
+              <input type="time" id="f-hfin" class="field-inp">
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Presidida por</label>
+              <input type="text" id="f-presidida" class="field-inp" placeholder="Nombre y cargo...">
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Redactado por</label>
+              <input type="text" id="f-redactado" class="field-inp" value="David Martin Requena &#8211; RT Gesti&oacute;n T&eacute;cnica">
+            </div>
+          </div>
         </div>
-        <input id="f-imgs" type="file" accept="image/*" multiple style="display:none" onchange="loadImgs(this)">
-        <div id="img-thumbs"></div>
+      </div>
+      <!-- PARTICIPANTES -->
+      <div class="section-wrap">
+        <div class="section-hdr" onclick="toggleSection(this)" id="hdr-parti">
+          <span>&#128101; Participantes</span>
+          <span class="section-arrow">&#9658;</span>
+        </div>
+        <div class="section-body" id="body-parti">
+          <div id="contacts-area">
+            <div class="contacts-label">Contactos guardados (clic para a&ntilde;adir):</div>
+            <div id="contacts-chips"></div>
+          </div>
+          <div id="parti-list"></div>
+          <button class="btn-add-parti" onclick="addParticipant()">+ A&ntilde;adir participante</button>
+        </div>
+      </div>
+      <!-- CONTENIDO -->
+      <div class="section-wrap">
+        <div class="section-hdr open" onclick="toggleSection(this)" id="hdr-cont">
+          <span>&#128221; Contenido</span>
+          <span class="section-arrow">&#9658;</span>
+        </div>
+        <div class="section-body open" id="body-cont">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab('text',this)">&#128221; Texto</button>
+            <button class="tab" onclick="switchTab('docx',this)">&#128196; Word</button>
+            <button class="tab" onclick="switchTab('images',this)">&#128247; Im&aacute;genes</button>
+          </div>
+          <div id="pane-text">
+            <textarea id="txt" placeholder="Pega aqui la transcripcion de la reunion...&#10;&#10;Cuanto mas detallada, mejor quedara el acta."></textarea>
+          </div>
+          <div id="pane-docx" style="display:none">
+            <div class="upload-zone" onclick="document.getElementById('f-docx').click()">
+              <span class="zone-icon">&#128196;</span>
+              <span class="zone-lbl">Haz clic para subir un Word (.docx)</span>
+              <span class="zone-sub">El texto se extrae autom&aacute;ticamente</span>
+              <span id="docx-ok" class="ok-badge" style="display:none">&#10003; Cargado</span>
+            </div>
+            <input id="f-docx" type="file" accept=".docx" style="display:none" onchange="loadDocx(this)">
+          </div>
+          <div id="pane-images" style="display:none">
+            <div class="upload-zone" onclick="document.getElementById('f-imgs').click()">
+              <span class="zone-icon">&#128247;</span>
+              <span class="zone-lbl">Sube fotos de tus notas o cuadernos</span>
+              <span class="zone-sub">JPG / PNG, m&uacute;ltiples im&aacute;genes</span>
+            </div>
+            <input id="f-imgs" type="file" accept="image/*" multiple style="display:none" onchange="loadImgs(this)">
+            <div id="img-thumbs"></div>
+          </div>
+        </div>
       </div>
       <div id="err"></div>
       <div id="succ"></div>
       <div class="btn-row">
         <button id="btn-gen" onclick="generate()">&#10024; Generar Acta</button>
         <button id="btn-dl" onclick="downloadDoc()">&#11015; Descargar .doc</button>
+        <button id="btn-pdf" onclick="exportPdf()">&#128462; Exportar PDF</button>
+      </div>
+      <div id="email-area">
+        <div class="email-label">&#128231; Enviar acta por email</div>
+        <div class="email-btns">
+          <button id="btn-email" onclick="sendEmail()">&#128231; Enviar por email</button>
+          <button id="btn-copy-email" onclick="copyEmail()">&#128203; Copiar email</button>
+        </div>
       </div>
     </div>
     <div id="preview-panel">
+      <button id="btn-close-preview" onclick="closePreview()" title="Cerrar vista previa">&#10005;</button>
       <div class="pvl">VISTA PREVIA</div>
       <div id="pc"></div>
     </div>
@@ -144,6 +303,69 @@ const saved=localStorage.getItem('cre_ant_key');
 if(saved)keyEl.value=saved;
 keyEl.addEventListener('input',()=>localStorage.setItem('cre_ant_key',keyEl.value.trim()));
 
+// Set today as default date
+(function(){
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('f-fecha').value=today;
+})();
+
+// API toggle
+function toggleApiBar(){
+  const bar=document.getElementById('apibar');
+  bar.classList.toggle('visible');
+}
+
+// Section collapse
+function toggleSection(hdr){
+  hdr.classList.toggle('open');
+  const body=hdr.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// Participants
+let contacts=JSON.parse(localStorage.getItem('cre_contacts')||'[]');
+function renderContacts(){
+  const chips=document.getElementById('contacts-chips');
+  chips.innerHTML=contacts.map((c,i)=>
+    `<button class="chip" onclick="addContactAsParticipant(${i})" title="A\u00f1adir a la lista">${e(c.nombre)}<button class="chip-del" onclick="event.stopPropagation();deleteContact(${i})" title="Eliminar contacto">\u00d7</button></button>`
+  ).join('');
+}
+function deleteContact(i){
+  contacts.splice(i,1);
+  localStorage.setItem('cre_contacts',JSON.stringify(contacts));
+  renderContacts();
+}
+function addContactAsParticipant(i){
+  const c=contacts[i];
+  addParticipant(c.nombre,c.cargo,true);
+}
+function addParticipant(nombre,cargo,asiste){
+  const list=document.getElementById('parti-list');
+  const row=document.createElement('div');
+  row.className='parti-row';
+  row.innerHTML=`<input type="text" placeholder="Nombre" value="${e(nombre||'')}"><input type="text" placeholder="Cargo" value="${e(cargo||'')}"><input type="checkbox" class="parti-check" ${asiste?'checked':''} title="Asiste"><button class="btn-del-parti" onclick="this.parentElement.remove();saveForm()">\u00d7</button>`;
+  list.appendChild(row);
+  saveForm();
+}
+function getParticipants(){
+  return Array.from(document.querySelectorAll('#parti-list .parti-row')).map(row=>{
+    const inputs=row.querySelectorAll('input[type=text]');
+    const check=row.querySelector('input[type=checkbox]');
+    return{nombre:inputs[0].value.trim(),cargo:inputs[1].value.trim(),asiste:check.checked};
+  }).filter(p=>p.nombre);
+}
+function saveContacts(){
+  const parts=getParticipants().filter(p=>p.nombre);
+  parts.forEach(p=>{
+    if(!contacts.find(c=>c.nombre===p.nombre)){
+      contacts.push({nombre:p.nombre,cargo:p.cargo});
+    }
+  });
+  localStorage.setItem('cre_contacts',JSON.stringify(contacts));
+  renderContacts();
+}
+
+// Tabs
 function switchTab(t,btn){
   tab=t;
   ['text','docx','images'].forEach((id,i)=>{
@@ -161,7 +383,7 @@ async function loadDocx(inp){
     document.getElementById('txt').value=r.value;
     document.getElementById('docx-ok').style.display='inline-block';
     switchTab('text',document.querySelectorAll('.tab')[0]);
-  }catch(e){showErr('Error leyendo Word: '+e.message);}
+  }catch(err){showErr('Error leyendo Word: '+err.message);}
 }
 
 function loadImgs(inp){
@@ -184,24 +406,65 @@ function loadImgs(inp){
   });
 }
 
+// Get form data
+function getFormData(){
+  return{
+    denominacion:document.getElementById('f-denom').value.trim(),
+    fecha:formatDate(document.getElementById('f-fecha').value),
+    hora_inicio:document.getElementById('f-hinicio').value,
+    hora_fin:document.getElementById('f-hfin').value,
+    modalidad:document.getElementById('f-modalidad').value,
+    presidida_por:document.getElementById('f-presidida').value.trim(),
+    redactado_por:document.getElementById('f-redactado').value.trim()||'David Martin Requena - RT Gestion Tecnica'
+  };
+}
+function formatDate(iso){
+  if(!iso)return'';
+  const[y,m,d]=iso.split('-');
+  return d+'/'+m+'/'+y;
+}
+
 async function generate(){
+  clearMsg();
   const key=keyEl.value.trim();
-  if(!key){showErr('Introduce tu API Key de Anthropic (sk-ant-api03-...)');return;}
   const txt=document.getElementById('txt').value.trim();
   const hasText=tab!=='images'&&txt;
   const hasImgs=tab==='images'&&imgs.length>0;
-  if(!hasText&&!hasImgs){showErr('Introduce una transcripcion o sube imagenes.');return;}
-  clearMsg();
   const btn=document.getElementById('btn-gen');
+  const fd=getFormData();
+
+  if(!key){
+    // Local mode - parse text without AI
+    if(!hasText){showErr('Introduce una transcripcion o configura tu API Key.');return;}
+    acta=localParse(txt,fd);
+    renderPreview(acta);
+    document.getElementById('btn-dl').style.display='block';
+    document.getElementById('btn-pdf').style.display='block';
+    document.getElementById('email-area').style.display='block';
+    saveContacts();
+    showSucc('Vista previa generada (modo local, sin IA). Revisa y edita seg\u00fan necesites.');
+    return;
+  }
+  if(!hasText&&!hasImgs){showErr('Introduce una transcripcion o sube im\u00e1genes.');return;}
+
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generando acta...';
-  acta=null;document.getElementById('btn-dl').style.display='none';
+  acta=null;
+  document.getElementById('btn-dl').style.display='none';
+  document.getElementById('btn-pdf').style.display='none';
+  document.getElementById('email-area').style.display='none';
+
+  const parts=getParticipants();
+  const asi=parts.filter(p=>p.asiste).map(p=>p.nombre+(p.cargo?' - '+p.cargo:'')).join(', ');
+  const exc=parts.filter(p=>!p.asiste).map(p=>p.nombre).join(', ');
+  const meta='Datos de la reunion: Denominacion='+fd.denominacion+', Fecha='+fd.fecha+', Hora inicio='+fd.hora_inicio+', Hora fin='+fd.hora_fin+', Modalidad='+fd.modalidad+', Presidida por='+fd.presidida_por+', Redactado por='+fd.redactado_por+(asi?', Asistentes='+asi:'')+(exc?', Excusan='+exc:'')+'. ';
+
   try{
     let content=[];
     if(tab==='images'){
       imgs.forEach(i=>content.push({type:'image',source:{type:'base64',media_type:i.type,data:i.data}}));
-      content.push({type:'text',text:'Transcribe y estructura el acta. SOLO JSON valido, sin backticks.'});
+      content.push({type:'text',text:meta+'Transcribe y estructura el acta. SOLO JSON valido, sin backticks.'});
     }else{
-      content.push({type:'text',text:'Estructura esta transcripcion como acta de Cruz Roja Madrid. SOLO JSON valido sin backticks:\n\n'+txt});
+      content.push({type:'text',text:meta+'Estructura esta transcripcion como acta de Cruz Roja Madrid. SOLO JSON valido sin backticks:\n\n'+txt});
     }
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
@@ -218,18 +481,106 @@ async function generate(){
       throw new Error(er.error?.message||'Error HTTP '+resp.status);
     }
     const data=await resp.json();
-    const raw=(data.content?.find(c=>c.type==='text')?.text||'{}').replace(/```json|```/g,'').trim();
+    const raw=(data.content?.find(c=>c.type==='text')?.text||'[]').replace(/```json|```/g,'').trim();
     acta=JSON.parse(raw);
+    // Merge form data into acta
+    if(fd.denominacion)acta.denominacion=fd.denominacion.toUpperCase();
+    if(fd.fecha)acta.fecha=fd.fecha;
+    if(fd.hora_inicio)acta.hora_inicio=fd.hora_inicio;
+    if(fd.hora_fin)acta.hora_fin=fd.hora_fin;
+    if(fd.modalidad)acta.modalidad=fd.modalidad;
+    if(fd.presidida_por)acta.presidida_por=fd.presidida_por;
+    acta.redactado_por=fd.redactado_por||'David Martin Requena - RT Gestion Tecnica';
+    if(parts.length>0){
+      acta.asistentes=parts.filter(p=>p.asiste).map(p=>({nombre:p.nombre,cargo:p.cargo}));
+      acta.excusan=parts.filter(p=>!p.asiste).map(p=>({nombre:p.nombre,cargo:p.cargo}));
+    }
     renderPreview(acta);
     document.getElementById('btn-dl').style.display='block';
+    document.getElementById('btn-pdf').style.display='block';
+    document.getElementById('email-area').style.display='block';
+    saveContacts();
     showSucc('Acta generada. Pulsa Descargar .doc para abrirla en Word con el formato Cruz Roja.');
-  }catch(e){
-    let m=e.message;
+  }catch(err){
+    let m=err.message;
     if(m.includes('401')||m.includes('authentication'))m='API Key incorrecta. Comprueba que la has copiado completa desde console.anthropic.com';
-    else if(m.includes('credit')||m.includes('billing'))m='Credito agotado. Recarga en console.anthropic.com -> Billing';
+    else if(m.includes('credit')||m.includes('billing'))m='Cr\u00e9dito agotado. Recarga en console.anthropic.com -> Billing';
     showErr(m);
   }
   btn.disabled=false;btn.innerHTML='&#10024; Generar Acta';
+}
+
+// Local parse (no AI)
+function localParse(txt,fd){
+  const parts=getParticipants();
+  const lines=txt.split('\n');
+  const agenda=[];
+  const contenido=[];
+  let currentTopic=null;
+  let currentObs=[];
+  lines.forEach(line=>{
+    const trimmed=line.trim();
+    if(!trimmed)return;
+    if(/^#+\s+/.test(trimmed)){
+      if(currentTopic!==null){contenido.push({asunto:currentTopic,observaciones:currentObs.join(' | ')});}
+      currentTopic=trimmed.replace(/^#+\s+/,'').toUpperCase();
+      currentObs=[];
+      agenda.push(trimmed.replace(/^#+\s+/,''));
+    }else if(currentTopic!==null){
+      currentObs.push(trimmed);
+    }
+  });
+  if(currentTopic!==null)contenido.push({asunto:currentTopic,observaciones:currentObs.join(' | ')});
+  if(contenido.length===0){contenido.push({asunto:'CONTENIDO',observaciones:txt.replace(/\n+/g,' | ')});}
+  if(agenda.length===0&&contenido.length>0)agenda.push(...contenido.map(c=>c.asunto));
+  return{
+    denominacion:(fd.denominacion||'REUNION').toUpperCase(),
+    fecha:fd.fecha,
+    hora_inicio:fd.hora_inicio,
+    hora_fin:fd.hora_fin,
+    modalidad:fd.modalidad,
+    presidida_por:fd.presidida_por,
+    redactado_por:fd.redactado_por,
+    asistentes:parts.filter(p=>p.asiste).map(p=>({nombre:p.nombre,cargo:p.cargo})),
+    excusan:parts.filter(p=>!p.asiste).map(p=>({nombre:p.nombre,cargo:p.cargo})),
+    agenda,
+    contenido
+  };
+}
+
+// Close preview
+function closePreview(){
+  document.getElementById('body').classList.remove('has-preview');
+  document.getElementById('preview-panel').style.display='none';
+}
+
+// PDF export
+function exportPdf(){
+  window.print();
+}
+
+// Email
+function buildEmailBody(){
+  if(!acta)return{subject:'',body:''};
+  const hora=new Date().getHours();
+  const saludo=hora<14?'Buenos d\u00edas':'Buenas tardes';
+  const nombre=acta.denominacion||'la reuni\u00f3n';
+  const fecha=acta.fecha||'';
+  const body=saludo+',\n\nAdjunto el acta de la '+nombre+', celebrada el '+fecha+'.\n\nQuedo a vuestra disposici\u00f3n para cualquier duda o aclaraci\u00f3n.\n\nUn saludo';
+  const subject='Acta - '+nombre+' - '+fecha;
+  return{subject,body};
+}
+function sendEmail(){
+  const{subject,body}=buildEmailBody();
+  const url='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  window.location.href=url;
+}
+function copyEmail(){
+  const{subject,body}=buildEmailBody();
+  const full='Asunto: '+subject+'\n\n'+body;
+  navigator.clipboard.writeText(full).then(()=>showSucc('Email copiado al portapapeles')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showSucc('Email copiado al portapapeles');
+  });
 }
 
 function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -239,12 +590,12 @@ function renderPreview(a){
   document.getElementById('preview-panel').style.display='block';
   const meta=[
     ['Denominacion','<b>'+e((a.denominacion||'').toUpperCase())+'</b>',false],
-    ['Fecha y Horario','Fecha: '+e(a.fecha||'')+' · '+e(a.hora_inicio||'')+(a.hora_fin?' – '+e(a.hora_fin):'')+' h',true],
+    ['Fecha y Horario','Fecha: '+e(a.fecha||'')+' &middot; '+e(a.hora_inicio||'')+(a.hora_fin?' &ndash; '+e(a.hora_fin):'')+' h',true],
     ['Modalidad',e(a.modalidad||''),false],
     ['Presidida por',e(a.presidida_por||''),true],
     ['Redactado por',e(a.redactado_por||''),false],
   ].map(([l,v,alt])=>'<tr><td class="tl">'+l+'</td><td class="tv'+(alt?' alt':'')+'">'+v+'</td></tr>').join('');
-  const asi=(a.asistentes||[]).map(x=>e(x.nombre+(x.cargo?' – '+x.cargo:''))).join(' · ');
+  const asi=(a.asistentes||[]).map(x=>e(x.nombre+(x.cargo?' \u2013 '+x.cargo:''))).join(' &middot; ');
   const exc=(a.excusan||[]).map(x=>e(x.nombre)).join(', ');
   const aRow='<tr><td class="tl">Asistentes<br><small style="font-weight:400;font-size:9px;">Excusan</small></td><td class="tv">'+asi+(exc?'<div style="font-size:9px;color:#666;margin-top:2px"><em>Excusan: </em>'+exc+'</div>':'')+'</td></tr>';
   const ag=(a.agenda||[]).map((x,i)=>'<div class="agi">'+(i+1)+'. '+e(x)+'</div>').join('');
@@ -252,7 +603,7 @@ function renderPreview(a){
   document.getElementById('pc').innerHTML=
     '<div class="logo-bar"><img class="pv-logo" src="data:image/jpeg;base64,'+LOGO+'" alt="CRE"><span style="font-size:10px;color:#6b7280;">'+e(a.fecha||'')+'</span></div>'+
     '<table>'+meta+aRow+'</table>'+
-    '<div class="agt">Orden del dia – Temas tratados</div>'+ag+
+    '<div class="agt">Orden del dia &ndash; Temas tratados</div>'+ag+
     '<div style="margin:8px 0;"></div>'+
     '<table><tr><th class="ch" style="width:27%">ASUNTO</th><th class="ch">OBSERVACIONES</th></tr>'+rows+'</table>';
 }
@@ -292,9 +643,47 @@ function downloadDoc(){
   el.download='Acta_'+den+'_'+(a.fecha||'').replace(/\//g,'-')+'.doc';
   document.body.appendChild(el);el.click();document.body.removeChild(el);URL.revokeObjectURL(url);
 }
+
+// Messages
 function showErr(m){const el=document.getElementById('err');el.innerText=m;el.style.display='block';document.getElementById('succ').style.display='none';}
 function showSucc(m){const el=document.getElementById('succ');el.textContent=m;el.style.display='block';document.getElementById('err').style.display='none';}
 function clearMsg(){document.getElementById('err').style.display='none';document.getElementById('succ').style.display='none';}
+
+// Autosave (every 5 seconds)
+function saveForm(){
+  const fd=getFormData();
+  fd.txtContent=document.getElementById('txt').value;
+  fd.participants=getParticipants();
+  localStorage.setItem('cre_form',JSON.stringify(fd));
+}
+function loadForm(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('cre_form')||'null');
+    if(!saved)return;
+    if(saved.denominacion)document.getElementById('f-denom').value=saved.denominacion;
+    if(saved.fecha){const iso=saved.fecha.split('/').reverse().join('-');document.getElementById('f-fecha').value=iso;}
+    if(saved.hora_inicio)document.getElementById('f-hinicio').value=saved.hora_inicio;
+    if(saved.hora_fin)document.getElementById('f-hfin').value=saved.hora_fin;
+    if(saved.modalidad)document.getElementById('f-modalidad').value=saved.modalidad;
+    if(saved.presidida_por)document.getElementById('f-presidida').value=saved.presidida_por;
+    if(saved.redactado_por)document.getElementById('f-redactado').value=saved.redactado_por;
+    if(saved.txtContent)document.getElementById('txt').value=saved.txtContent;
+    if(saved.participants&&saved.participants.length>0){
+      saved.participants.forEach(p=>addParticipant(p.nombre,p.cargo,p.asiste));
+    }
+  }catch(_){}
+}
+setInterval(saveForm,5000);
+
+// Keyboard shortcuts
+document.addEventListener('keydown',function(evt){
+  if((evt.ctrlKey||evt.metaKey)&&evt.key==='Enter'){evt.preventDefault();generate();}
+  if((evt.ctrlKey||evt.metaKey)&&evt.key==='s'){evt.preventDefault();if(acta)downloadDoc();}
+});
+
+// Init
+renderContacts();
+loadForm();
 </script>
 </body>
 </html>

@@ -474,7 +474,7 @@ async function generate(){
         'anthropic-version':'2023-06-01',
         'anthropic-dangerous-direct-browser-access':'true'
       },
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:3000,system:SYS,messages:[{role:'user',content}]})
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:4096,system:SYS,messages:[{role:'user',content}]})
     });
     if(!resp.ok){
       const er=await resp.json().catch(()=>({}));
@@ -505,6 +505,7 @@ async function generate(){
     let m=err.message;
     if(m.includes('401')||m.includes('authentication'))m='API Key incorrecta. Comprueba que la has copiado completa desde console.anthropic.com';
     else if(m.includes('credit')||m.includes('billing'))m='Cr\u00e9dito agotado. Recarga en console.anthropic.com -> Billing';
+    else if(m.includes('Unterminated')||m.includes('JSON'))m='La respuesta de la IA fue cortada (acta demasiado larga). Intenta con un texto m\u00e1s corto o divide el contenido en partes.';
     showErr(m);
   }
   btn.disabled=false;btn.innerHTML='&#10024; Generar Acta';

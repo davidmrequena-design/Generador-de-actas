@@ -438,7 +438,7 @@ const SYS=`Eres un experto redactor de actas institucionales para Cruz Roja Madr
 REGLAS: Devuelve SOLO JSON valido. Sin backticks, sin texto adicional.
 "redactado_por" es SIEMPRE: "David Martin Requena - RT Gestion Tecnica"
 "denominacion" en MAYUSCULAS. "asunto": MAYUSCULAS, SIN numeracion, max 8 palabras.
-"observaciones": redaccion formal atribuyendo cada intervencion a su interlocutor cuando sea identificable. Usa formulas como "D./Dna. [Nombre] indico que...", "La Presidenta expuso que...", "D. [Nombre] propuso...", "Dna. [Nombre] manifesto...". Emplea verbos variados y precisos: indico, informo, expuso, manifesto, senalo, propuso, solicito, preciso, subrayó, recordo. Para acuerdos colectivos usa voz pasiva: "Se acordo por unanimidad...", "Se aprobo...", "Se informo al pleno...". Cuida la precision, la riqueza del lenguaje, la coherencia narrativa y la fidelidad a lo tratado.
+"observaciones": redaccion formal, sintetizada y concisa. Atribuye cada intervencion usando SOLO las iniciales del nombre completo del interlocutor (ej: Juan Garcia Lopez → JGL). Emplea verbos precisos: indico, informo, expuso, manifesto, senalo, propuso, solicito. Para acuerdos colectivos usa voz pasiva: "Se acordo...", "Se aprobo...", "Se informo...". Cada parrafo debe ser breve (2-3 lineas maximo); sintetiza al maximo la informacion mas relevante. Separa SIEMPRE cada parrafo con | para generar espacio entre ellos.
 Primera mencion de organismo o grupo: nombre completo + siglas entre parentesis. Siguientes: solo siglas.
 Campos ausentes: null o []. Multiples subtemas en observaciones: separar con |
 JSON: {"denominacion":"NOMBRE","fecha":"DD/MM/YYYY","hora_inicio":"HH:MM","hora_fin":"HH:MM","modalidad":"Videoconferencia / Presencial","presidida_por":"Nombre - Cargo","redactado_por":"David Martin Requena - RT Gestion Tecnica","asistentes":[{"nombre":"...","cargo":"..."}],"excusan":[{"nombre":"...","cargo":"..."}],"agenda":["Tema 1"],"contenido":[{"asunto":"TITULO MAYUSCULAS","observaciones":"Texto..."}]}`;
@@ -846,10 +846,10 @@ function renderPreview(a){
     ['Presidida por',e(a.presidida_por||''),true],
     ['Redactado por',e(a.redactado_por||''),false],
   ].map(([l,v,alt])=>'<tr><td class="tl">'+l+'</td><td class="tv'+(alt?' alt':'')+'">'+v+'</td></tr>').join('');
-  const asiRows=(a.asistentes||[]).map(x=>'<tr><td style="padding:1px 3px;width:50%">'+e(x.nombre)+'</td><td style="padding:1px 3px;color:#555">'+e(x.cargo||'')+'</td></tr>').join('');
-  const excRows=(a.excusan||[]).map(x=>'<tr><td style="padding:1px 3px;width:50%">'+e(x.nombre)+'</td><td style="padding:1px 3px;color:#555">'+e(x.cargo||'')+'</td></tr>').join('');
-  const aRow='<tr><td class="tl">Asistentes</td><td class="tv">'+(asiRows?'<table style="width:100%;border-collapse:collapse;">'+asiRows+'</table>':'&mdash;')+'</td></tr>'+
-    (excRows?'<tr><td class="tl" style="font-weight:400;font-size:9px;">Excusan asistencia</td><td class="tv alt"><table style="width:100%;border-collapse:collapse;">'+excRows+'</table></td></tr>':'');
+  const asiList=(a.asistentes||[]).map(x=>'<div style="padding:1px 0;">'+e(x.nombre)+(x.cargo?'&nbsp;&ndash;&nbsp;<span style="color:#555;">'+e(x.cargo)+'</span>':'')+'</div>').join('');
+  const excList=(a.excusan||[]).map(x=>'<div style="padding:1px 0;color:#555;">'+e(x.nombre)+(x.cargo?'&nbsp;&ndash;&nbsp;'+e(x.cargo):'')+'</div>').join('');
+  const aRow='<tr><td class="tl">Asistentes</td><td class="tv">'+(asiList||'&mdash;')+'</td></tr>'+
+    (excList?'<tr><td class="tl" style="font-weight:400;font-size:9px;">Excusan asistencia</td><td class="tv alt">'+excList+'</td></tr>':'');
   const ag=(a.agenda||[]).map((x,i)=>'<div class="agi">'+(i+1)+'. '+e(x)+'</div>').join('');
   const rows=(a.contenido||[]).map((row,i)=>'<tr><td class="ca">'+e((row.asunto||'').toUpperCase())+'</td><td class="co'+(i%2?' alt':'')+'">'+e(row.observaciones||'').split('|').map(l=>'<p>'+l.trim()+'</p>').join('')+'</td></tr>').join('');
   document.getElementById('pc').innerHTML=

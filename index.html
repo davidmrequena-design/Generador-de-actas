@@ -165,9 +165,9 @@ select.field-inp{cursor:pointer;}
 /* RESUMEN TAB LAYOUT */
 #tab-resumen{display:none;background:#f8fafc;}
 .res-main{display:flex;min-height:600px;}
-.res-input-panel{flex:0 0 400px;max-width:420px;padding:20px;border-right:1px solid #e5e7eb;background:#fff;overflow-y:auto;max-height:calc(100vh - 120px);}
-#res-preview-panel{flex:1;padding:20px;overflow-y:auto;background:#f8fafc;max-height:calc(100vh - 120px);}
-@media(max-width:900px){.res-main{flex-direction:column;}.res-input-panel{flex:none;max-width:100%;max-height:none;}#res-preview-panel{max-height:none;}}
+.res-input-panel{flex:0 0 400px;max-width:420px;padding:20px;border-right:1px solid #e5e7eb;background:#fff;}
+#res-preview-panel{flex:1;padding:20px;background:#f8fafc;}
+@media(max-width:900px){.res-main{flex-direction:column;}.res-input-panel{flex:none;max-width:100%;}#res-preview-panel{}}
 /* META FIELDS */
 .res-meta-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
 .res-meta-full{grid-column:1/-1;}
@@ -344,11 +344,11 @@ select.field-inp{cursor:pointer;}
             <div class="upload-zone" id="docx-zone" onclick="document.getElementById('f-docx').click()"
               ondragover="zoneDragOver(event,this)" ondragleave="zoneDragLeave(this)" ondrop="zoneDrop(event,'docx',this)">
               <span class="zone-icon">&#128196;</span>
-              <span class="zone-lbl">Arrastra o haz clic para subir un Word (.docx)</span>
+              <span class="zone-lbl">Arrastra o haz clic para subir un Word (.doc / .docx)</span>
               <span class="zone-sub">El texto se extrae autom&aacute;ticamente</span>
               <span id="docx-ok" class="ok-badge" style="display:none">&#10003; Cargado</span>
             </div>
-            <input id="f-docx" type="file" accept=".docx" style="display:none" onchange="loadDocx(this)">
+            <input id="f-docx" type="file" accept=".doc,.docx" style="display:none" onchange="loadDocx(this)">
           </div>
           <div id="pane-images" style="display:none">
             <div class="upload-zone" id="imgs-zone" onclick="document.getElementById('f-imgs').click()"
@@ -1246,12 +1246,11 @@ async function sendResumenEmail(){
   if(!resData)return;
   // Download PDF first
   await exportResumenPdf();
-  const hora=new Date().getHours();
-  const saludo=hora<14?'Buenos d\u00edas':'Buenas tardes';
   const titulo=resData.titulo||'Resumen de Reuniones - Asambleas Locales';
   const periodo=resData.periodo?(' - '+resData.periodo):'';
   const subject='Informe: '+titulo+periodo;
-  const body=saludo+',\n\nAdjunto el informe "'+titulo+'"'+(resData.periodo?' correspondiente al per\u00edodo '+resData.periodo:'')+'.'+'\n\nEl informe incluye un resumen con logros y aspectos a mejorar por cada Asamblea Local ('+((resData.reuniones||[]).length)+' asambleas analizadas).'+'\n\n(El PDF se ha descargado autom\u00e1ticamente. Por favor, adj\u00fantalo a este email.)'+'\n\nQuedo a vuestra disposici\u00f3n para cualquier duda o aclaraci\u00f3n.\n\nUn saludo,\n'+(resData.responsable||'David Martin Requena').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+  const mes=resData.periodo||'[mes correspondiente]';
+  const body='Buenas tardes,\n\nAdjunto un resumen de los principales aspectos recogidos y resumidos de las actas enviadas por los RL de sus reuniones del mes de '+mes+'.\n\nCualquier cosa, estoy a vuestra disposici\u00f3n.\n\nUn saludo';
   setTimeout(()=>{window.location.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);},800);
 }
 

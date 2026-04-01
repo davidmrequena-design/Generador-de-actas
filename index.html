@@ -864,24 +864,22 @@ function downloadDoc(){
   if(!acta)return;const a=acta;
   const lbl='font-family:Montserrat,Arial;font-size:9pt;color:#fff;font-weight:bold;';
   const val='font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;';
-  const _tdN='font-family:Montserrat,Arial;font-size:10pt;padding:1pt 3pt;width:50%;color:'+DARK+';';
-  const _tdC='font-family:Montserrat,Arial;font-size:10pt;padding:1pt 3pt;color:'+DARK+';';
-  const asiTR=(a.asistentes||[]).map(x=>'<tr><td style="'+_tdN+'">'+e(x.nombre)+'</td><td style="'+_tdC+'">'+e(x.cargo||'')+'</td></tr>').join('');
-  const excTR=(a.excusan||[]).map(x=>'<tr><td style="'+_tdN+'color:#555;">'+e(x.nombre)+'</td><td style="'+_tdC+'color:#555;">'+e(x.cargo||'')+'</td></tr>').join('');
-  const asiTable=asiTR?'<table style="width:100%;border-collapse:collapse;">'+asiTR+'</table>':'&mdash;';
-  const excTable=excTR?'<table style="width:100%;border-collapse:collapse;">'+excTR+'</table>':'';
+  // Asistentes/excusan as plain paragraph lines (no inner table)
+  const pSty='font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';margin:1pt 0;';
+  const asiList=(a.asistentes||[]).map(x=>'<p style="'+pSty+'">'+e(x.nombre)+(x.cargo?' &ndash; <span style="color:#555;">'+e(x.cargo)+'</span>':'')+'</p>').join('');
+  const excList=(a.excusan||[]).map(x=>'<p style="'+pSty+'color:#555;">'+e(x.nombre)+(x.cargo?' &ndash; '+e(x.cargo):'')+'</p>').join('');
   const rows=(a.contenido||[]).map((item,i)=>{
     const bg=i%2===0?'#fff':GREY;
     const obs=e(item.observaciones||'').split('|').map(l=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:3pt 0 0 0;">'+l.trim()+'</p>').join('');
     return '<tr><td style="width:27%;border:1pt solid '+BRD+';background:#fff;padding:5pt;vertical-align:middle;"><p style="font-family:Montserrat,Arial;font-size:9pt;color:'+NAVY+';font-weight:bold;text-align:center;margin:0;">'+e((item.asunto||'').toUpperCase())+'</p></td><td style="border:1pt solid '+BRD+';background:'+bg+';padding:5pt;vertical-align:top;">'+obs+'</td></tr>';
   }).join('');
-  const ag=(a.agenda||[]).map((x,i)=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:1pt 0;">'+(i+1)+'.&nbsp;&nbsp;'+e(x)+'</p>').join('');
-  // Header: table layout (Word does not support display:flex)
+  const ag=(a.agenda||[]).map((x,i)=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:2pt 0;">'+(i+1)+'.&nbsp;&nbsp;'+e(x)+'</p>').join('');
+  // Header: table layout (Word does not support display:flex); logo sized to match preview (22px ≈ 16pt)
   const hdr=
     '<table style="width:100%;border-collapse:collapse;margin-bottom:10pt;">'+
     '<tr>'+
     '<td style="padding-bottom:6pt;border-bottom:1.5pt solid '+NAVY+';vertical-align:middle;">'+
-    '<img src="data:image/jpeg;base64,'+LOGO+'" style="height:26pt;" alt="Cruz Roja"/>'+
+    '<img src="data:image/jpeg;base64,'+LOGO+'" style="height:16pt;width:auto;" alt="Cruz Roja"/>'+
     '</td>'+
     '<td style="padding-bottom:6pt;border-bottom:1.5pt solid '+NAVY+';vertical-align:middle;text-align:right;">'+
     '<span style="font-family:Montserrat,Arial;font-size:9pt;color:'+BRD+';">'+e(a.fecha||'')+'</span>'+
@@ -900,13 +898,13 @@ function downloadDoc(){
     '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Redactado por</p></td>'+
     '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">'+e(a.redactado_por||'')+'</p></td></tr>'+
     '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Asistentes</p></td>'+
-    '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;">'+asiTable+'</td></tr>'+
-    (excTable?'<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'font-weight:400;font-size:8pt;margin:0;">Excusan asistencia</p></td>'+
-    '<td style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;">'+excTable+'</td></tr>':'');
+    '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;">'+(asiList||'&mdash;')+'</td></tr>'+
+    (excList?'<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'font-weight:400;font-size:8pt;margin:0;">Excusan asistencia</p></td>'+
+    '<td style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;">'+excList+'</td></tr>':'');
   const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>@page{size:21cm 29.7cm;margin:2.5cm 2.0cm 2.0cm 2.0cm;}body{font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';margin:0;}table{border-collapse:collapse;width:100%;}p{margin:0;line-height:1.4;}</style></head><body>'+
     hdr+
-    '<table style="width:100%;border-collapse:collapse;margin-bottom:12pt;">'+metaRows+'</table>'+
-    '<p style="font-family:Montserrat,Arial;font-size:14pt;color:'+NAVY+';font-weight:bold;margin:0 0 6pt 0;">Orden del d&iacute;a &ndash; Temas tratados</p>'+ag+
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:14pt;">'+metaRows+'</table>'+
+    '<p style="font-family:Montserrat,Arial;font-size:13pt;color:'+NAVY+';font-weight:bold;margin:0 0 6pt 0;">Orden del d&iacute;a &ndash; Temas tratados</p>'+ag+
     '<p style="margin:10pt 0;">&nbsp;</p>'+
     '<table style="width:100%;border-collapse:collapse;">'+
     '<tr><td style="width:27%;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">ASUNTO</p></td>'+

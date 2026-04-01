@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <style>
 :root{--navy:#011e41;--red:#f5333f;--grey:#ededed;--dark:#323232;--brd:#58595b;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -84,8 +85,15 @@ select.field-inp{cursor:pointer;}
 .tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
 .tab:hover:not(.active){background:#f1f5f9;}
 /* UPLOAD */
-.upload-zone{min-height:120px;border:2px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:#f9fafb;padding:20px;transition:border-color .2s;text-align:center;}
-.upload-zone:hover{border-color:var(--navy);}
+.upload-zone{min-height:120px;border:2px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:#f9fafb;padding:20px;transition:border-color .2s,background .2s;text-align:center;}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--navy);background:#f0f5ff;}
+/* BULK DROP ZONE */
+.res-bulk-zone{min-height:110px;border:2px dashed #7ea8cc;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;background:#f0f9ff;padding:16px;transition:border-color .2s,background .2s;text-align:center;margin-bottom:12px;}
+.res-bulk-zone:hover,.res-bulk-zone.drag-over{border-color:var(--navy);background:#e0f2fe;}
+.res-bulk-icon{font-size:28px;line-height:1;}
+.res-bulk-lbl{font-size:12px;font-weight:600;color:#0369a1;}
+.res-bulk-sub{font-size:10px;color:#64748b;}
+.res-bulk-badge{display:inline-block;background:#dcfce7;color:#15803d;font-size:10px;font-weight:600;padding:2px 9px;border-radius:12px;margin-top:2px;}
 .zone-icon{font-size:32px;}
 .zone-lbl{font-size:13px;color:#6b7280;}
 .zone-sub{font-size:11px;color:#9ca3af;}
@@ -333,18 +341,20 @@ select.field-inp{cursor:pointer;}
             <textarea id="txt" placeholder="Pega aqui la transcripcion de la reunion...&#10;&#10;Cuanto mas detallada, mejor quedara el acta."></textarea>
           </div>
           <div id="pane-docx" style="display:none">
-            <div class="upload-zone" onclick="document.getElementById('f-docx').click()">
+            <div class="upload-zone" id="docx-zone" onclick="document.getElementById('f-docx').click()"
+              ondragover="zoneDragOver(event,this)" ondragleave="zoneDragLeave(this)" ondrop="zoneDrop(event,'docx',this)">
               <span class="zone-icon">&#128196;</span>
-              <span class="zone-lbl">Haz clic para subir un Word (.docx)</span>
+              <span class="zone-lbl">Arrastra o haz clic para subir un Word (.docx)</span>
               <span class="zone-sub">El texto se extrae autom&aacute;ticamente</span>
               <span id="docx-ok" class="ok-badge" style="display:none">&#10003; Cargado</span>
             </div>
             <input id="f-docx" type="file" accept=".docx" style="display:none" onchange="loadDocx(this)">
           </div>
           <div id="pane-images" style="display:none">
-            <div class="upload-zone" onclick="document.getElementById('f-imgs').click()">
+            <div class="upload-zone" id="imgs-zone" onclick="document.getElementById('f-imgs').click()"
+              ondragover="zoneDragOver(event,this)" ondragleave="zoneDragLeave(this)" ondrop="zoneDrop(event,'imgs',this)">
               <span class="zone-icon">&#128247;</span>
-              <span class="zone-lbl">Sube fotos de tus notas o cuadernos</span>
+              <span class="zone-lbl">Arrastra o haz clic para subir fotos</span>
               <span class="zone-sub">JPG / PNG, m&uacute;ltiples im&aacute;genes</span>
             </div>
             <input id="f-imgs" type="file" accept="image/*" multiple style="display:none" onchange="loadImgs(this)">
@@ -392,11 +402,17 @@ select.field-inp{cursor:pointer;}
             <input class="res-meta-inp" type="text" id="res-responsable" value="David Martin Requena &ndash; RT Gesti&oacute;n T&eacute;cnica">
           </div>
         </div>
-        <div style="font-size:10px;color:#374151;margin-bottom:10px;line-height:1.6;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;padding:7px 10px;">
-          &#128161; Sube el acta (Word .docx) o pega el texto de cada Asamblea Local (hasta 22). Cada elemento = una asamblea.
+        <div class="res-bulk-zone" id="res-bulk-zone"
+          onclick="document.getElementById('res-bulk-file').click()"
+          ondragover="resBulkDragOver(event)" ondragleave="resBulkDragLeave()" ondrop="resBulkDrop(event)">
+          <span class="res-bulk-icon">&#128451;</span>
+          <span class="res-bulk-lbl">Arrastra aqu&iacute; todas las actas o haz clic para seleccionar</span>
+          <span class="res-bulk-sub">.docx · .doc · .pdf &mdash; varios archivos a la vez (m&aacute;x. 22)</span>
+          <span id="res-bulk-count" class="res-bulk-badge" style="display:none"></span>
         </div>
+        <input id="res-bulk-file" type="file" accept=".doc,.docx,.pdf" multiple style="display:none" onchange="resBulkFileChange(this)">
         <div class="res-transcript-list" id="res-transcript-list"></div>
-        <button id="btn-add-transcript" onclick="addTranscript()">+ A&ntilde;adir otra Asamblea</button>
+        <button id="btn-add-transcript" onclick="addTranscript()">+ A&ntilde;adir Asamblea manualmente</button>
         <button id="btn-gen-resumen" onclick="generateResumen()">&#10024; Generar Resumen</button>
         <div id="resumen-err"></div>
       </div>
@@ -553,6 +569,40 @@ function loadImgs(inp){
     s.style.cssText='font-size:12px;color:#15803d;align-self:center;';
     s.textContent=imgs.length+' imagen'+(imgs.length>1?'es':'')+' lista'+(imgs.length>1?'s':'');
     thumbs.appendChild(s);
+  });
+}
+
+// Drag-drop helpers for Generar Actas upload zones
+function zoneDragOver(ev,zone){ev.preventDefault();ev.stopPropagation();zone.classList.add('drag-over');}
+function zoneDragLeave(zone){zone.classList.remove('drag-over');}
+function zoneDrop(ev,type,zone){
+  ev.preventDefault();ev.stopPropagation();
+  zone.classList.remove('drag-over');
+  const files=ev.dataTransfer.files;
+  if(!files.length)return;
+  if(type==='docx'){
+    // Create synthetic event for loadDocx
+    const dt=new DataTransfer();dt.items.add(files[0]);
+    const inp=document.getElementById('f-docx');inp.files=dt.files;
+    loadDocx(inp);
+  }else if(type==='imgs'){
+    const inp=document.getElementById('f-imgs');
+    try{const dt=new DataTransfer();Array.from(files).forEach(f=>{if(f.type.startsWith('image/'))dt.items.add(f);});inp.files=dt.files;loadImgs(inp);}
+    catch(_){loadImgsFromFiles(Array.from(files).filter(f=>f.type.startsWith('image/')));}
+  }
+}
+function loadImgsFromFiles(fileList){
+  imgs=[];
+  const thumbs=document.getElementById('img-thumbs');
+  thumbs.innerHTML='';
+  Promise.all(fileList.map(f=>new Promise(res=>{
+    const r=new FileReader();
+    r.onload=()=>{imgs.push({data:r.result.split(',')[1],type:f.type,url:r.result});
+      const img=document.createElement('img');img.src=r.result;img.className='thumb';thumbs.appendChild(img);res();};
+    r.readAsDataURL(f);
+  }))).then(()=>{
+    const s=document.createElement('span');s.style.cssText='font-size:12px;color:#15803d;align-self:center;';
+    s.textContent=imgs.length+' imagen'+(imgs.length>1?'es':'')+' lista'+(imgs.length>1?'s':'');thumbs.appendChild(s);
   });
 }
 
@@ -879,47 +929,112 @@ function switchAppTab(t,btn){
 // ============================================================
 // RESUMEN DE REUNIONES
 // ============================================================
-let resTranscripts=[{name:'Asamblea Local 1',text:'',docxName:''}];
+let resTranscripts=[];
 const MAX_TRANSCRIPTS=22;
 let resData=null;
 
-function triggerResDocx(i){document.getElementById('res-docx-'+i).click();}
-
 function renderResTranscripts(){
   const list=document.getElementById('res-transcript-list');
+  if(!resTranscripts.length){list.innerHTML='';return;}
   list.innerHTML=resTranscripts.map((t,i)=>
     '<div class="res-transcript-item">'+
       '<div class="res-transcript-hdr">'+
-        '<span style="font-size:12px;">&#127963;</span>'+
+        '<span style="font-size:12px;">'+(t.docxName?'&#128196;':'&#127963;')+'</span>'+
         '<input type="text" value="'+e(t.name)+'" placeholder="Nombre de la Asamblea Local..." oninput="resTranscripts['+i+'].name=this.value">'+
-        (resTranscripts.length>1?'<button class="btn-del-transcript" onclick="delTranscript('+i+')" title="Eliminar">&#10005;</button>':'')+
+        '<button class="btn-del-transcript" onclick="delTranscript('+i+')" title="Eliminar">&#10005;</button>'+
       '</div>'+
       '<div class="res-transcript-body">'+
-        '<div class="res-docx-zone" onclick="triggerResDocx('+i+')">'+
-          '<span>&#128196;</span>'+
-          (t.docxName?'<span class="res-docx-name">'+e(t.docxName)+'</span>':'<span>Subir acta Word (.docx)&hellip;</span>')+
-        '</div>'+
-        '<input id="res-docx-'+i+'" type="file" accept=".docx" style="display:none" onchange="resDocxLoad(this,'+i+')">'+
-        '<textarea placeholder="&hellip;o pega aqu\u00ed el texto del acta o transcripci\u00f3n&hellip;" oninput="resTranscripts['+i+'].text=this.value">'+e(t.text)+'</textarea>'+
+        (t.docxName?'<div style="font-size:10px;color:#0369a1;margin-bottom:4px;padding:3px 6px;background:#e0f2fe;border-radius:4px;">&#128196; '+e(t.docxName)+'</div>':'')+
+        '<textarea placeholder="Texto del acta o transcripci\u00f3n\u2026" oninput="resTranscripts['+i+'].text=this.value" style="min-height:60px;">'+e(t.text)+'</textarea>'+
       '</div>'+
     '</div>'
   ).join('');
 }
 
-async function resDocxLoad(inp,i){
-  const f=inp.files[0];if(!f)return;
-  try{
-    const ab=await f.arrayBuffer();
-    const r=await mammoth.extractRawText({arrayBuffer:ab});
-    resTranscripts[i].text=r.value;
-    resTranscripts[i].docxName=f.name;
-    if(!resTranscripts[i].name||resTranscripts[i].name.startsWith('Asamblea Local ')){
-      const nm=f.name.replace(/\.docx?$/i,'').replace(/[_\-]/g,' ').replace(/acta\s*/i,'').trim();
-      if(nm)resTranscripts[i].name=nm;
-    }
-    renderResTranscripts();
-  }catch(err){showResErr('Error leyendo Word: '+err.message);}
+// ── Bulk file handling ──────────────────────────────────────
+let _pdfWorkerSet=false;
+function ensurePdfWorker(){
+  if(_pdfWorkerSet)return;
+  if(window.pdfjsLib){
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    _pdfWorkerSet=true;
+  }
 }
+
+async function extractFileText(file){
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='docx'||ext==='doc'){
+    const ab=await file.arrayBuffer();
+    const r=await mammoth.extractRawText({arrayBuffer:ab});
+    return r.value||'';
+  }
+  if(ext==='pdf'){
+    ensurePdfWorker();
+    if(!window.pdfjsLib)throw new Error('pdf.js no disponible');
+    const ab=await file.arrayBuffer();
+    const pdf=await window.pdfjsLib.getDocument({data:new Uint8Array(ab)}).promise;
+    let text='';
+    for(let p=1;p<=pdf.numPages;p++){
+      const pg=await pdf.getPage(p);
+      const tc=await pg.getTextContent();
+      text+=tc.items.map(i=>i.str).join(' ')+'\n';
+    }
+    return text;
+  }
+  throw new Error('Formato no soportado: '+ext);
+}
+
+function fileToAssemblyName(fname){
+  return fname
+    .replace(/\.(docx?|pdf)$/i,'')
+    .replace(/[_\-]/g,' ')
+    .replace(/\s*acta\s*/gi,' ')
+    .replace(/\s+/g,' ')
+    .trim()||fname;
+}
+
+async function processBulkFiles(files){
+  const arr=Array.from(files).slice(0,MAX_TRANSCRIPTS);
+  if(!arr.length)return;
+  const bulkZone=document.getElementById('res-bulk-zone');
+  bulkZone.style.pointerEvents='none';
+  document.getElementById('btn-gen-resumen').disabled=true;
+  document.getElementById('resumen-err').style.display='none';
+  const badge=document.getElementById('res-bulk-count');
+  badge.textContent='Cargando '+arr.length+' archivo'+(arr.length>1?'s\u2026':'\u2026');
+  badge.style.background='#fef9c3';badge.style.color='#92400e';
+  badge.style.display='inline-block';
+  let loaded=0;
+  const errors=[];
+  const newEntries=[];
+  await Promise.all(arr.map(async f=>{
+    try{
+      const text=await extractFileText(f);
+      newEntries.push({name:fileToAssemblyName(f.name),text,docxName:f.name});
+      loaded++;
+    }catch(err){errors.push(f.name+': '+err.message);}
+  }));
+  // Sort by filename for consistent order
+  newEntries.sort((a,b)=>a.docxName.localeCompare(b.docxName,undefined,{numeric:true}));
+  // Keep manual (no-file) entries; append new file entries
+  resTranscripts=[...resTranscripts.filter(t=>!t.docxName),...newEntries];
+  badge.textContent=loaded+' archivo'+(loaded!==1?'s':'')+(loaded!==1?' cargados':' cargado');
+  badge.style.background=errors.length?'#fee2e2':'#dcfce7';
+  badge.style.color=errors.length?'#dc2626':'#15803d';
+  if(errors.length)showResErr('Errores al cargar: '+errors.join('; '));
+  bulkZone.style.pointerEvents='';
+  document.getElementById('btn-gen-resumen').disabled=false;
+  renderResTranscripts();
+}
+
+function resBulkDragOver(ev){ev.preventDefault();ev.stopPropagation();document.getElementById('res-bulk-zone').classList.add('drag-over');}
+function resBulkDragLeave(){document.getElementById('res-bulk-zone').classList.remove('drag-over');}
+function resBulkDrop(ev){
+  ev.preventDefault();ev.stopPropagation();
+  document.getElementById('res-bulk-zone').classList.remove('drag-over');
+  processBulkFiles(ev.dataTransfer.files);
+}
+function resBulkFileChange(inp){processBulkFiles(inp.files);inp.value='';}
 
 function addTranscript(){
   if(resTranscripts.length>=MAX_TRANSCRIPTS)return;
@@ -928,7 +1043,6 @@ function addTranscript(){
 }
 
 function delTranscript(i){
-  if(resTranscripts.length<=1)return;
   resTranscripts.splice(i,1);
   renderResTranscripts();
 }

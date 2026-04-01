@@ -85,6 +85,19 @@ input,textarea,button,select{font-family:'Montserrat',system-ui,sans-serif;}
 /* RL Banner */
 #rl-banner{background:#0369a1;color:#fff;padding:10px 20px;font-size:12px;font-weight:600;display:none;align-items:center;gap:10px;flex-wrap:wrap;}
 #rl-banner.show{display:flex;}
+#rl-update-btn{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s;}
+#rl-update-btn:hover{background:rgba(255,255,255,.3);}
+/* Update-link modal (RL mode) */
+#update-modal{display:none;position:fixed;inset:0;z-index:1100;align-items:center;justify-content:center;}
+#update-modal.show{display:flex;}
+#update-modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.55);}
+#update-modal-box{position:relative;background:#fff;border-radius:12px;padding:26px;max-width:560px;width:92%;box-shadow:0 10px 50px rgba(0,0,0,.28);}
+#update-modal-box h3{font-size:15px;font-weight:700;color:#0369a1;margin-bottom:8px;}
+#update-modal-box p{font-size:12px;color:#475569;margin-bottom:14px;line-height:1.6;}
+#update-link-input{width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;color:var(--dark);outline:none;margin-bottom:4px;}
+#update-link-input:focus{border-color:#0369a1;}
+#update-link-error{font-size:11px;color:var(--red);min-height:16px;margin-bottom:10px;}
+.update-modal-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
 /* RL Form */
 #rl-form{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;margin-bottom:14px;display:none;}
 #rl-form.show{display:block;}
@@ -107,7 +120,7 @@ input,textarea,button,select{font-family:'Montserrat',system-ui,sans-serif;}
 #modal-copy-badge{font-size:11px;color:#16a34a;font-weight:600;display:none;}
 /* @media print */
 @media print{
-  #toolbar,#actions,#summary-bar,#nav-bar,#legend-details,#rl-form,#rl-banner,#link-modal{display:none!important;}
+  #toolbar,#actions,#summary-bar,#nav-bar,#legend-details,#rl-form,#rl-banner,#link-modal,#update-modal{display:none!important;}
   body{background:#fff;}
   #app{box-shadow:none;border-radius:0;margin:0;max-width:100%;}
   #cal-wrapper{border:none;overflow:visible;}
@@ -129,12 +142,12 @@ input,textarea,button,select{font-family:'Montserrat',system-ui,sans-serif;}
   </div>
 </div>
 <div id="rl-banner">
-  <span>&#128065; MODO LECTURA &mdash; Selecciona un hueco &quot;Libre&quot; y rellena tus datos para reservar</span>
+  <span>&#128065; MODO LECTURA &mdash; Visualiza la planificaci&oacute;n actual</span>
+  <button id="rl-update-btn" onclick="showUpdateModal()" aria-label="Actualizar informaci&oacute;n con un enlace nuevo">&#128260; Actualizar informaci&oacute;n</button>
 </div>
 
 <!-- ─── Link Modal ─── -->
-<div id="link-modal">
-  <div id="link-modal-overlay" onclick="closeLinkModal()"></div>
+<div id="link-modal">  <div id="link-modal-overlay" onclick="closeLinkModal()"></div>
   <div id="link-modal-box">
     <h3>&#128279; Enlace actualizado para Asambleas</h3>
     <p>Este enlace contiene la planificaci&oacute;n actual. C&oacute;pialo y comp&aacute;rtelo con los Responsables Locales.<br>
@@ -144,6 +157,22 @@ input,textarea,button,select{font-family:'Montserrat',system-ui,sans-serif;}
       <button class="btn btn-primary" onclick="copyModalLink()">&#128203; Copiar enlace</button>
       <span id="modal-copy-badge">&#10003; &iexcl;Copiado!</span>
       <button class="btn btn-grey" onclick="closeLinkModal()" style="margin-left:auto;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Update-link Modal (RL mode) ─── -->
+<div id="update-modal">
+  <div id="update-modal-overlay" onclick="closeUpdateModal()"></div>
+  <div id="update-modal-box">
+    <h3>&#128260; Actualizar informaci&oacute;n</h3>
+    <p>Si el Responsable Territorial te ha enviado un <strong>enlace nuevo</strong>, p&eacute;galo aqu&iacute; para ver la planificaci&oacute;n actualizada.<br>
+    El enlace tiene el mismo aspecto que el que ya tienes, pero con los cambios m&aacute;s recientes.</p>
+    <input type="text" id="update-link-input" placeholder="Pega aqu&iacute; el enlace nuevo que te han enviado&hellip;" oninput="document.getElementById('update-link-error').textContent=''">
+    <div id="update-link-error"></div>
+    <div class="update-modal-actions">
+      <button class="btn btn-primary" onclick="loadNewLink()">&#128260; Cargar nueva versi&oacute;n</button>
+      <button class="btn btn-grey" onclick="closeUpdateModal()" style="margin-left:auto;">Cancelar</button>
     </div>
   </div>
 </div>
@@ -680,8 +709,49 @@ function copyModalLink(){
     setTimeout(()=>{badge.style.display="none";},3000);
   });
 }
+// ─── Update-link Modal (RL mode) ───
+function showUpdateModal(){
+  document.getElementById("update-link-input").value="";
+  document.getElementById("update-link-error").textContent="";
+  document.getElementById("update-modal").classList.add("show");
+  setTimeout(()=>document.getElementById("update-link-input").focus(),80);
+}
+function closeUpdateModal(){
+  document.getElementById("update-modal").classList.remove("show");
+}
+function loadNewLink(){
+  const raw=document.getElementById("update-link-input").value.trim();
+  if(!raw){
+    document.getElementById("update-link-error").textContent="Por favor, pega el enlace antes de continuar.";
+    return;
+  }
+  // Extract the #data= fragment from whatever was pasted (full URL or just the fragment)
+  let fragment="";
+  if(raw.includes("#data=")){
+    fragment=raw.slice(raw.indexOf("#data=")+6);
+  } else if(raw.startsWith("data=")){
+    fragment=raw.slice(5);
+  } else {
+    document.getElementById("update-link-error").textContent="El enlace no parece válido. Debe contener '#data=' seguido de los datos.";
+    return;
+  }
+  // Validate that it decodes correctly and has the expected schema before navigating
+  try{
+    const json=decodeURIComponent(atob(fragment));
+    const parsed=JSON.parse(json);
+    if(typeof parsed!=="object"||parsed===null||typeof parsed.data!=="object"){
+      throw new Error("schema");
+    }
+  }catch(e){
+    document.getElementById("update-link-error").textContent="El enlace no es válido o está incompleto. Comprueba que lo has pegado entero.";
+    return;
+  }
+  // Navigate to the base URL of this page with the new hash
+  const base=location.href.split("#")[0];
+  location.href=base+"#data="+fragment;
+}
 document.addEventListener("keydown",e=>{
-  if(e.key==="Escape") closeLinkModal();
+  if(e.key==="Escape"){closeLinkModal();closeUpdateModal();}
 });
 
 // ─── RL Mode ───

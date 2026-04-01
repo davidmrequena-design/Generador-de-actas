@@ -154,55 +154,83 @@ select.field-inp{cursor:pointer;}
 .app-nav-tab{padding:10px 22px;color:#7ea8cc;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;letter-spacing:.03em;font-family:'Montserrat',sans-serif;}
 .app-nav-tab:hover{color:#fff;background:rgba(255,255,255,.06);}
 .app-nav-tab.active{color:#fff;border-bottom-color:var(--red);}
-/* RESUMEN PANEL */
-#tab-resumen{display:none;padding:22px;background:#fff;max-width:900px;margin:0 auto;}
-.res-transcript-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+/* RESUMEN TAB LAYOUT */
+#tab-resumen{display:none;background:#f8fafc;}
+.res-main{display:flex;min-height:600px;}
+.res-input-panel{flex:0 0 400px;max-width:420px;padding:20px;border-right:1px solid #e5e7eb;background:#fff;overflow-y:auto;max-height:calc(100vh - 120px);}
+#res-preview-panel{flex:1;padding:20px;overflow-y:auto;background:#f8fafc;max-height:calc(100vh - 120px);}
+@media(max-width:900px){.res-main{flex-direction:column;}.res-input-panel{flex:none;max-width:100%;max-height:none;}#res-preview-panel{max-height:none;}}
+/* META FIELDS */
+.res-meta-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.res-meta-full{grid-column:1/-1;}
+.res-meta-lbl{display:block;font-size:10px;font-weight:600;color:#6b7280;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;}
+.res-meta-inp{width:100%;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:11px;outline:none;font-family:'Montserrat',sans-serif;color:var(--dark);}
+.res-meta-inp:focus{border-color:var(--navy);}
+/* TRANSCRIPT ITEMS */
+.res-transcript-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
 .res-transcript-item{border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;}
-.res-transcript-hdr{background:#f8fafc;padding:8px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e5e7eb;}
-.res-transcript-hdr input{flex:1;border:none;background:transparent;font-size:12px;font-weight:600;color:var(--navy);outline:none;font-family:'Montserrat',sans-serif;}
-.res-transcript-body{padding:10px 12px;}
-.res-transcript-body textarea{width:100%;min-height:90px;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:11px;font-family:'Montserrat',sans-serif;resize:vertical;outline:none;color:var(--dark);line-height:1.5;}
+.res-transcript-hdr{background:#f8fafc;padding:7px 10px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #e5e7eb;}
+.res-transcript-hdr input{flex:1;border:none;background:transparent;font-size:11px;font-weight:600;color:var(--navy);outline:none;font-family:'Montserrat',sans-serif;}
+.res-transcript-body{padding:8px 10px;}
+.res-docx-zone{display:flex;align-items:center;gap:7px;padding:5px 8px;background:#f0f9ff;border:1px dashed #7ea8cc;border-radius:5px;cursor:pointer;font-size:10px;color:#0369a1;margin-bottom:6px;transition:background .15s;}
+.res-docx-zone:hover{background:#e0f2fe;}
+.res-docx-name{color:#15803d;font-weight:600;}
+.res-transcript-body textarea{width:100%;min-height:70px;padding:6px 8px;border:1px solid #d1d5db;border-radius:5px;font-size:10px;font-family:'Montserrat',sans-serif;resize:vertical;outline:none;color:var(--dark);line-height:1.5;}
 .res-transcript-body textarea:focus{border-color:var(--navy);}
-.btn-del-transcript{background:none;border:none;cursor:pointer;color:#ef4444;font-size:16px;line-height:1;padding:2px 6px;}
+.btn-del-transcript{background:none;border:none;cursor:pointer;color:#ef4444;font-size:15px;line-height:1;padding:2px 5px;}
 .btn-del-transcript:hover{color:#dc2626;}
-#btn-add-transcript{padding:8px 14px;background:#f1f5f9;border:1px dashed #94a3b8;border-radius:7px;cursor:pointer;font-size:11px;color:#475569;font-weight:500;margin-bottom:14px;display:block;width:100%;font-family:'Montserrat',sans-serif;}
+#btn-add-transcript{padding:7px 12px;background:#f1f5f9;border:1px dashed #94a3b8;border-radius:6px;cursor:pointer;font-size:10px;color:#475569;font-weight:500;margin-bottom:12px;display:block;width:100%;font-family:'Montserrat',sans-serif;}
 #btn-add-transcript:hover{background:#e2e8f0;}
-#btn-gen-resumen{padding:11px;background:var(--red);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;width:100%;transition:opacity .15s;font-family:'Montserrat',sans-serif;}
+#btn-gen-resumen{padding:10px;background:var(--red);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;width:100%;transition:opacity .15s;font-family:'Montserrat',sans-serif;}
 #btn-gen-resumen:disabled{background:#94a3b8;cursor:not-allowed;}
 #btn-gen-resumen:not(:disabled):hover{opacity:.88;}
-#resumen-err{display:none;color:#dc2626;font-size:12px;margin-top:10px;padding:8px 12px;background:#fee2e2;border-radius:8px;line-height:1.5;}
-/* RESUMEN OUTPUT */
-#resumen-output{display:none;margin-top:18px;}
-.res-out-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--red);}
-.res-asamblea{margin-bottom:16px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;}
-.res-asamblea-hdr{background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:10px 14px;display:flex;align-items:center;gap:8px;}
-.res-asamblea-body{padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+#resumen-err{display:none;color:#dc2626;font-size:11px;margin-top:8px;padding:7px 10px;background:#fee2e2;border-radius:6px;line-height:1.5;}
+/* PREVIEW PANEL */
+.res-preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--red);flex-wrap:wrap;gap:8px;}
+.res-preview-label{font-size:10px;font-weight:700;letter-spacing:.1em;color:#9ca3af;}
+.res-dl-row{display:flex;gap:6px;flex-wrap:wrap;}
+.res-dl-btn{padding:7px 13px;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;font-family:'Montserrat',sans-serif;transition:opacity .15s;}
+.res-dl-btn:hover{opacity:.85;}
+.res-dl-btn.docx{background:var(--navy);color:#fff;}
+.res-dl-btn.pdf{background:#1e40af;color:#fff;}
+.res-dl-btn.email{background:#059669;color:#fff;}
+/* PREVIEW OUTPUT STYLES */
+#res-preview-content{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px;}
+.res-out-logo-bar{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:3px solid var(--red);margin-bottom:16px;}
+.res-out-logo{height:28px;}
+.res-out-org-name{font-size:11px;font-weight:700;color:var(--navy);text-align:right;}
+.res-out-org-sub{font-size:9px;color:#6b7280;text-align:right;}
+.res-out-main-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:3px;text-transform:uppercase;letter-spacing:.02em;}
+.res-out-period{font-size:11px;color:#6b7280;margin-bottom:18px;}
+.res-asamblea{margin-bottom:16px;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;page-break-inside:avoid;}
+.res-asamblea-hdr{background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:9px 14px;display:flex;align-items:center;gap:8px;}
+.res-asamblea-num{background:var(--red);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;}
+.res-asamblea-body{display:grid;grid-template-columns:1fr 1fr;}
 @media(max-width:600px){.res-asamblea-body{grid-template-columns:1fr;}}
-.res-section{background:#f8fafc;border-radius:8px;padding:10px 12px;}
-.res-section-title{font-size:10px;font-weight:700;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:5px;text-transform:uppercase;}
-.res-section-title.logros{color:#15803d;}
-.res-section-title.mejoras{color:#b45309;}
-.res-section.logros-sec{border-left:3px solid #15803d;}
-.res-section.mejoras-sec{border-left:3px solid #b45309;}
-.res-item{font-size:11px;color:var(--dark);padding:3px 0 3px 16px;position:relative;line-height:1.5;}
-.res-item::before{position:absolute;left:0;font-weight:700;}
+.res-section{padding:10px 12px;}
+.res-section.logros-sec{border-right:1px solid #e5e7eb;}
+.res-section-title{font-size:9px;font-weight:700;letter-spacing:.07em;margin-bottom:6px;text-transform:uppercase;padding:2px 7px;border-radius:3px;display:inline-block;}
+.res-section-title.logros-lbl{color:#15803d;background:#dcfce7;}
+.res-section-title.mejoras-lbl{color:#b45309;background:#fef3c7;}
+.res-item{font-size:10px;color:var(--dark);padding:2px 0 2px 16px;position:relative;line-height:1.5;}
+.res-item::before{position:absolute;left:1px;font-weight:700;}
 .res-logro::before{content:'✓';color:#15803d;}
-.res-mejora::before{content:'⚠';color:#b45309;}
-.res-global{margin-top:18px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:14px;}
-.res-global-title{font-size:12px;font-weight:700;color:#0369a1;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.res-global-item{font-size:11px;color:var(--dark);padding:3px 0 3px 16px;position:relative;line-height:1.5;}
+.res-mejora::before{content:'▸';color:#b45309;}
+.res-global{margin-top:16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px 14px;}
+.res-global-title{font-size:10px;font-weight:700;color:#0369a1;margin-bottom:8px;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.05em;}
+.res-global-item{font-size:10px;color:var(--dark);padding:2px 0 2px 14px;position:relative;line-height:1.5;}
 .res-global-item::before{content:'→';position:absolute;left:0;color:#0369a1;font-weight:700;}
-.res-dl-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
-#btn-print-resumen{padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:'Montserrat',sans-serif;}
-#btn-print-resumen:hover{opacity:.88;}
 /* PRINT */
 @media print{
-  #api-toggle-bar,#apibar,#app-nav,#input-panel,#btn-close-preview,#tab-resumen .res-dl-row,#tab-resumen #btn-add-transcript,#tab-resumen #btn-gen-resumen,#tab-resumen .res-transcript-list{display:none!important;}
+  #api-toggle-bar,#apibar,#app-nav,#input-panel,#btn-close-preview,.res-input-panel,.res-preview-header{display:none!important;}
   #body{display:block!important;}
   #body.has-preview{display:block!important;}
   #preview-panel{display:block!important;padding:0;border:none;overflow:visible;}
   #app{box-shadow:none;margin:0;border-radius:0;}
   #tab-resumen{display:block!important;}
+  .res-main{display:block!important;}
+  #res-preview-panel{display:block!important;max-height:none;padding:0;}
+  #res-preview-content{border:none;padding:0;}
 }
 </style>
 </head>
@@ -347,13 +375,43 @@ select.field-inp{cursor:pointer;}
   </div><!-- /#body -->
   </div><!-- /#tab-actas -->
   <div id="tab-resumen" style="display:none">
-    <div style="max-width:820px;margin:0 auto;padding:22px;">
-      <div style="font-size:12px;color:#374151;margin-bottom:16px;line-height:1.6;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px 14px;">&#128161; Pega las transcripciones o res&uacute;menes de varias reuniones y genera un informe consolidado con logros y aspectos a mejorar por asamblea.</div>
-      <div class="res-transcript-list" id="res-transcript-list"></div>
-      <button id="btn-add-transcript" onclick="addTranscript()">+ A&ntilde;adir otra reuni&oacute;n</button>
-      <button id="btn-gen-resumen" onclick="generateResumen()">&#10024; Generar Resumen</button>
-      <div id="resumen-err"></div>
-      <div id="resumen-output"></div>
+    <div class="res-main">
+      <!-- LEFT: INPUT PANEL -->
+      <div class="res-input-panel">
+        <div class="res-meta-bar">
+          <div class="res-meta-full">
+            <label class="res-meta-lbl">T&iacute;tulo del informe</label>
+            <input class="res-meta-inp" type="text" id="res-titulo" placeholder="Resumen de Reuniones &ndash; Asambleas Locales">
+          </div>
+          <div>
+            <label class="res-meta-lbl">Per&iacute;odo</label>
+            <input class="res-meta-inp" type="text" id="res-periodo" placeholder="Ej: Febrero 2026">
+          </div>
+          <div>
+            <label class="res-meta-lbl">Responsable</label>
+            <input class="res-meta-inp" type="text" id="res-responsable" value="David Martin Requena &ndash; RT Gesti&oacute;n T&eacute;cnica">
+          </div>
+        </div>
+        <div style="font-size:10px;color:#374151;margin-bottom:10px;line-height:1.6;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;padding:7px 10px;">
+          &#128161; Sube el acta (Word .docx) o pega el texto de cada Asamblea Local (hasta 22). Cada elemento = una asamblea.
+        </div>
+        <div class="res-transcript-list" id="res-transcript-list"></div>
+        <button id="btn-add-transcript" onclick="addTranscript()">+ A&ntilde;adir otra Asamblea</button>
+        <button id="btn-gen-resumen" onclick="generateResumen()">&#10024; Generar Resumen</button>
+        <div id="resumen-err"></div>
+      </div>
+      <!-- RIGHT: PREVIEW PANEL -->
+      <div id="res-preview-panel" style="display:none">
+        <div class="res-preview-header">
+          <span class="res-preview-label">VISTA PREVIA</span>
+          <div class="res-dl-row">
+            <button class="res-dl-btn docx" onclick="downloadResumenDoc()">&#11015; Descargar .docx</button>
+            <button class="res-dl-btn pdf" id="btn-res-pdf" onclick="exportResumenPdf()">&#128462; PDF</button>
+            <button class="res-dl-btn email" onclick="sendResumenEmail()">&#128231; Email</button>
+          </div>
+        </div>
+        <div id="res-preview-content"></div>
+      </div>
     </div>
   </div>
 </div><!-- /#app -->
@@ -821,28 +879,51 @@ function switchAppTab(t,btn){
 // ============================================================
 // RESUMEN DE REUNIONES
 // ============================================================
-let resTranscripts=[{name:'Reuni\u00f3n 1',text:''}];
-const MAX_TRANSCRIPTS=20;
+let resTranscripts=[{name:'Asamblea Local 1',text:'',docxName:''}];
+const MAX_TRANSCRIPTS=22;
+let resData=null;
+
+function triggerResDocx(i){document.getElementById('res-docx-'+i).click();}
 
 function renderResTranscripts(){
   const list=document.getElementById('res-transcript-list');
   list.innerHTML=resTranscripts.map((t,i)=>
     '<div class="res-transcript-item">'+
       '<div class="res-transcript-hdr">'+
-        '<span>&#128203;</span>'+
-        '<input type="text" value="'+e(t.name)+'" placeholder="Nombre de la reuni\u00f3n..." oninput="resTranscripts['+i+'].name=this.value">'+
+        '<span style="font-size:12px;">&#127963;</span>'+
+        '<input type="text" value="'+e(t.name)+'" placeholder="Nombre de la Asamblea Local..." oninput="resTranscripts['+i+'].name=this.value">'+
         (resTranscripts.length>1?'<button class="btn-del-transcript" onclick="delTranscript('+i+')" title="Eliminar">&#10005;</button>':'')+
       '</div>'+
       '<div class="res-transcript-body">'+
-        '<textarea placeholder="Pega aqu\u00ed la transcripci\u00f3n o resumen de esta reuni\u00f3n..." oninput="resTranscripts['+i+'].text=this.value">'+e(t.text)+'</textarea>'+
+        '<div class="res-docx-zone" onclick="triggerResDocx('+i+')">'+
+          '<span>&#128196;</span>'+
+          (t.docxName?'<span class="res-docx-name">'+e(t.docxName)+'</span>':'<span>Subir acta Word (.docx)&hellip;</span>')+
+        '</div>'+
+        '<input id="res-docx-'+i+'" type="file" accept=".docx" style="display:none" onchange="resDocxLoad(this,'+i+')">'+
+        '<textarea placeholder="&hellip;o pega aqu\u00ed el texto del acta o transcripci\u00f3n&hellip;" oninput="resTranscripts['+i+'].text=this.value">'+e(t.text)+'</textarea>'+
       '</div>'+
     '</div>'
   ).join('');
 }
 
+async function resDocxLoad(inp,i){
+  const f=inp.files[0];if(!f)return;
+  try{
+    const ab=await f.arrayBuffer();
+    const r=await mammoth.extractRawText({arrayBuffer:ab});
+    resTranscripts[i].text=r.value;
+    resTranscripts[i].docxName=f.name;
+    if(!resTranscripts[i].name||resTranscripts[i].name.startsWith('Asamblea Local ')){
+      const nm=f.name.replace(/\.docx?$/i,'').replace(/[_\-]/g,' ').replace(/acta\s*/i,'').trim();
+      if(nm)resTranscripts[i].name=nm;
+    }
+    renderResTranscripts();
+  }catch(err){showResErr('Error leyendo Word: '+err.message);}
+}
+
 function addTranscript(){
   if(resTranscripts.length>=MAX_TRANSCRIPTS)return;
-  resTranscripts.push({name:'Reuni\u00f3n '+(resTranscripts.length+1),text:''});
+  resTranscripts.push({name:'Asamblea Local '+(resTranscripts.length+1),text:'',docxName:''});
   renderResTranscripts();
 }
 
@@ -852,22 +933,28 @@ function delTranscript(i){
   renderResTranscripts();
 }
 
-const SYS_RESUMEN=`Eres un experto en analisis de reuniones institucionales de Cruz Roja Madrid.
-Analiza las transcripciones o resumenes de reuniones y genera un informe estructurado en JSON.
-REGLAS: Devuelve SOLO JSON valido. Sin backticks. Sin texto adicional.
-JSON: {"reuniones":[{"nombre":"Nombre reunion","logros":["logro positivo 1","logro 2"],"mejoras":["aspecto a mejorar 1"]}],"conclusiones_globales":["conclusion global 1","conclusion 2"]}
-Los logros son aspectos positivos, acuerdos alcanzados, avances. Las mejoras son retos, problemas o aspectos a trabajar.`;
+const SYS_RESUMEN=`Eres un experto en an\u00e1lisis de reuniones institucionales de Cruz Roja Madrid.
+Analiza las actas de las Asambleas Locales y genera un informe estructurado en JSON.
+REGLAS: Devuelve SOLO JSON v\u00e1lido. Sin backticks. Sin texto adicional.
+"logros": acuerdos alcanzados, actividades completadas, compromisos cumplidos, aspectos positivos, buenas pr\u00e1cticas. M\u00e1x 6 items.
+"mejoras": retos identificados, incidencias, necesidades de recursos, aspectos que requieren atenci\u00f3n/seguimiento. M\u00e1x 6 items.
+Frases concisas en tono institucional formal.
+JSON: {"titulo":"RESUMEN DE REUNIONES - ASAMBLEAS LOCALES","periodo":"","reuniones":[{"nombre":"Nombre Asamblea","logros":["logro 1"],"mejoras":["mejora 1"]}],"conclusiones_globales":["conclusi\u00f3n 1"]}`;
 
 async function generateResumen(){
   const key=keyEnabled?keyEl.value.trim():'';
   if(!key){showResErr('Configura tu API Key de Anthropic primero (bot\u00f3n \u2699\uFE0F Configuraci\u00f3n API).');return;}
   const filled=resTranscripts.filter(t=>t.text.trim());
-  if(!filled.length){showResErr('A\u00f1ade al menos una transcripci\u00f3n con contenido.');return;}
+  if(!filled.length){showResErr('A\u00f1ade al menos un acta con contenido (texto o Word subido).');return;}
   const btn=document.getElementById('btn-gen-resumen');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Analizando reuniones...';
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Analizando actas...';
   document.getElementById('resumen-err').style.display='none';
-  document.getElementById('resumen-output').style.display='none';
-  const prompt=filled.map(t=>'=== REUNI\u00d3N: '+t.name+' ===\n'+t.text).join('\n\n');
+  document.getElementById('res-preview-panel').style.display='none';
+  const titulo=document.getElementById('res-titulo').value.trim()||'RESUMEN DE REUNIONES - ASAMBLEAS LOCALES';
+  const periodo=document.getElementById('res-periodo').value.trim();
+  const responsable=document.getElementById('res-responsable').value.trim()||'David Martin Requena \u2013 RT Gesti\u00f3n T\u00e9cnica';
+  const prompt='T\u00cdTULO: '+titulo+'\nPER\u00cdODO: '+periodo+'\n\n'+
+    filled.map(t=>'=== ASAMBLEA LOCAL: '+t.name+' ===\n'+t.text).join('\n\n---\n\n');
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
@@ -877,13 +964,17 @@ async function generateResumen(){
         'anthropic-version':'2023-06-01',
         'anthropic-dangerous-direct-browser-access':'true'
       },
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:4096,system:SYS_RESUMEN,messages:[{role:'user',content:'Analiza estas reuniones y devuelve el JSON:\n\n'+prompt}]})
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:8192,system:SYS_RESUMEN,messages:[{role:'user',content:'Analiza estas actas de Asambleas Locales de Cruz Roja Madrid y devuelve el JSON:\n\n'+prompt}]})
     });
     if(!resp.ok){const er=await resp.json().catch(()=>({}));throw new Error(er.error?.message||'Error HTTP '+resp.status);}
     const data=await resp.json();
     const raw=(data.content?.find(c=>c.type==='text')?.text||'{}').replace(/```json|```/g,'').trim();
-    const result=JSON.parse(raw);
-    renderResumen(result);
+    resData=JSON.parse(raw);
+    resData.titulo=titulo||resData.titulo||'RESUMEN DE REUNIONES - ASAMBLEAS LOCALES';
+    resData.periodo=periodo||resData.periodo||'';
+    resData.responsable=responsable;
+    renderResumen(resData);
+    document.getElementById('res-preview-panel').style.display='block';
   }catch(err){
     let m=err.message;
     if(m.includes('401')||m.includes('authentication'))m='API Key incorrecta.';
@@ -895,15 +986,24 @@ async function generateResumen(){
 }
 
 function renderResumen(data){
-  const output=document.getElementById('resumen-output');
-  const reuniones=(data.reuniones||[]).map(r=>{
+  const pc=document.getElementById('res-preview-content');
+  const reuniones=(data.reuniones||[]).map((r,idx)=>{
     const logros=(r.logros||[]).map(l=>'<div class="res-item res-logro">'+e(l)+'</div>').join('');
     const mejoras=(r.mejoras||[]).map(m=>'<div class="res-item res-mejora">'+e(m)+'</div>').join('');
     return '<div class="res-asamblea">'+
-      '<div class="res-asamblea-hdr"><span>&#128203;</span>'+e(r.nombre||'')+'</div>'+
+      '<div class="res-asamblea-hdr">'+
+        '<div class="res-asamblea-num">'+(idx+1)+'</div>'+
+        '<span>'+e((r.nombre||'').toUpperCase())+'</span>'+
+      '</div>'+
       '<div class="res-asamblea-body">'+
-        (logros?'<div class="res-section logros-sec"><div class="res-section-title logros">&#10003; Logros y aspectos positivos</div>'+logros+'</div>':'<div class="res-section logros-sec"><div class="res-section-title logros">&#10003; Sin logros registrados</div></div>')+
-        (mejoras?'<div class="res-section mejoras-sec"><div class="res-section-title mejoras">&#9888; Aspectos a mejorar</div>'+mejoras+'</div>':'<div class="res-section mejoras-sec"><div class="res-section-title mejoras">&#9888; Sin aspectos a mejorar</div></div>')+
+        '<div class="res-section logros-sec">'+
+          '<div class="res-section-title logros-lbl">&#10003; Logros y aspectos positivos</div>'+
+          (logros||'<div class="res-item" style="color:#9ca3af;font-style:italic;">Sin logros registrados</div>')+
+        '</div>'+
+        '<div class="res-section mejoras-sec">'+
+          '<div class="res-section-title mejoras-lbl">&#9658; Aspectos a mejorar</div>'+
+          (mejoras||'<div class="res-item" style="color:#9ca3af;font-style:italic;">Sin aspectos registrados</div>')+
+        '</div>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -912,11 +1012,133 @@ function renderResumen(data){
       '<div class="res-global-title">&#127758; Conclusiones Globales</div>'+
       data.conclusiones_globales.map(c=>'<div class="res-global-item">'+e(c)+'</div>').join('')+
     '</div>':'';
-  output.innerHTML=
-    '<div class="res-out-title">&#128202; Resumen de Reuniones</div>'+
+  pc.innerHTML=
+    '<div class="res-out-logo-bar">'+
+      '<img class="res-out-logo" src="data:image/jpeg;base64,'+LOGO+'" alt="Cruz Roja">'+
+      '<div>'+
+        '<div class="res-out-org-name">Cruz Roja Madrid</div>'+
+        '<div class="res-out-org-sub">'+e(data.responsable||'')+'</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="res-out-main-title">'+e(data.titulo||'RESUMEN DE REUNIONES')+'</div>'+
+    (data.periodo?'<div class="res-out-period">Per\u00edodo: '+e(data.periodo)+'</div>':'')+
+    reuniones+globales;
+}
+
+// Download resumen as .docx
+function downloadResumenDoc(){
+  if(!resData)return;
+  const data=resData;
+  const f='font-family:Montserrat,Arial;';
+  const reuniones=(data.reuniones||[]).map((r,idx)=>{
+    const logros=(r.logros||[]).map(l=>'<p style="'+f+'font-size:10pt;color:'+DARK+';margin:2pt 0 2pt 10pt;">&#10003; '+e(l)+'</p>').join('');
+    const mejoras=(r.mejoras||[]).map(m=>'<p style="'+f+'font-size:10pt;color:'+DARK+';margin:2pt 0 2pt 10pt;">&#9658; '+e(m)+'</p>').join('');
+    return '<table style="width:100%;border-collapse:collapse;margin-bottom:10pt;">'+
+      '<tr><td colspan="2" style="background:'+NAVY+';padding:5pt 8pt;">'+
+        '<p style="'+f+'font-size:11pt;color:#fff;font-weight:bold;margin:0;">'+(idx+1)+'. '+e((r.nombre||'').toUpperCase())+'</p>'+
+      '</td></tr>'+
+      '<tr>'+
+        '<td style="width:50%;vertical-align:top;border:1pt solid #e5e7eb;padding:7pt;">'+
+          '<p style="'+f+'font-size:8pt;color:#15803d;font-weight:bold;margin:0 0 4pt;background:#dcfce7;padding:2pt 5pt;">&#10003; LOGROS Y ASPECTOS POSITIVOS</p>'+
+          (logros||'<p style="'+f+'font-size:10pt;color:#9ca3af;font-style:italic;">Sin logros registrados</p>')+
+        '</td>'+
+        '<td style="width:50%;vertical-align:top;border:1pt solid #e5e7eb;background:'+GREY+';padding:7pt;">'+
+          '<p style="'+f+'font-size:8pt;color:#b45309;font-weight:bold;margin:0 0 4pt;background:#fef3c7;padding:2pt 5pt;">&#9658; ASPECTOS A MEJORAR</p>'+
+          (mejoras||'<p style="'+f+'font-size:10pt;color:#9ca3af;font-style:italic;">Sin aspectos registrados</p>')+
+        '</td>'+
+      '</tr>'+
+    '</table>';
+  }).join('');
+  const globales=(data.conclusiones_globales&&data.conclusiones_globales.length)?
+    '<p style="margin:10pt 0 0;">&nbsp;</p>'+
+    '<table style="width:100%;border-collapse:collapse;">'+
+      '<tr><td style="background:#0369a1;padding:5pt 8pt;">'+
+        '<p style="'+f+'font-size:11pt;color:#fff;font-weight:bold;margin:0;">&#127758; CONCLUSIONES GLOBALES</p>'+
+      '</td></tr>'+
+      '<tr><td style="border:1pt solid #bae6fd;background:#f0f9ff;padding:8pt;">'+
+        data.conclusiones_globales.map(c=>'<p style="'+f+'font-size:10pt;color:'+DARK+';margin:2pt 0 2pt 10pt;">&#8594; '+e(c)+'</p>').join('')+
+      '</td></tr>'+
+    '</table>':'';
+  const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'+
+    '<head><meta charset="utf-8"><style>@page{size:21cm 29.7cm;margin:2.5cm 2.0cm 2.0cm 2.0cm;}body{font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';margin:0;}table{border-collapse:collapse;width:100%;}p{margin:0;line-height:1.4;}</style></head>'+
+    '<body>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:7pt;border-bottom:2pt solid '+RED+';margin-bottom:12pt;">'+
+      '<img src="data:image/jpeg;base64,'+LOGO+'" style="height:26pt;" alt="Cruz Roja"/>'+
+      '<div style="text-align:right;">'+
+        '<p style="'+f+'font-size:10pt;font-weight:bold;color:'+NAVY+';margin:0;">Cruz Roja Madrid</p>'+
+        '<p style="'+f+'font-size:8pt;color:#6b7280;margin:0;">'+e(data.responsable||'')+'</p>'+
+      '</div>'+
+    '</div>'+
+    '<p style="'+f+'font-size:15pt;font-weight:bold;color:'+NAVY+';margin:0 0 3pt;text-transform:uppercase;">'+e(data.titulo||'RESUMEN DE REUNIONES')+'</p>'+
+    (data.periodo?'<p style="'+f+'font-size:10pt;color:#6b7280;margin:0 0 12pt;">Per\u00edodo: '+e(data.periodo)+'</p>':'<p style="margin:0 0 12pt;">&nbsp;</p>')+
     reuniones+globales+
-    '<div class="res-dl-row"><button id="btn-print-resumen" onclick="window.print()">&#128462; Imprimir / Guardar PDF</button></div>';
-  output.style.display='block';
+    '</body></html>';
+  const blob=new Blob(['\ufeff',doc],{type:'application/msword'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  const per=(data.periodo||'').replace(/[^a-zA-Z\u00C0-\u024F0-9]/g,'_').replace(/_+/g,'_').slice(0,20);
+  a.download='Resumen_AALL'+(per?'_'+per:'')+'.doc';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// Export resumen as PDF
+async function exportResumenPdf(){
+  if(!resData)return;
+  const previewEl=document.getElementById('res-preview-content');
+  const btn=document.getElementById('btn-res-pdf');
+  const origText=btn.innerHTML;
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>PDF...';
+  try{
+    const canvas=await html2canvas(previewEl,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false});
+    const imgData=canvas.toDataURL('image/png');
+    const jsPDFLib=window.jspdf||window.jsPDF;
+    const {jsPDF}=jsPDFLib||{};
+    if(!jsPDF){window.print();return;}
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const pageW=pdf.internal.pageSize.getWidth();
+    const pageH=pdf.internal.pageSize.getHeight();
+    const margin=10;
+    const maxW=pageW-margin*2;
+    const ratio=canvas.width/maxW;
+    const fullImgH=canvas.height/ratio;
+    const maxImgHPerPage=pageH-margin*2;
+    if(fullImgH<=maxImgHPerPage){
+      pdf.addImage(imgData,'PNG',margin,margin,maxW,fullImgH);
+    }else{
+      const rowPx=Math.floor(maxImgHPerPage*ratio);
+      let srcY=0;
+      while(srcY<canvas.height){
+        const sliceH=Math.min(rowPx,canvas.height-srcY);
+        const tmp=document.createElement('canvas');
+        tmp.width=canvas.width;tmp.height=sliceH;
+        tmp.getContext('2d').drawImage(canvas,0,srcY,canvas.width,sliceH,0,0,canvas.width,sliceH);
+        const sliceImg=tmp.toDataURL('image/png');
+        const sliceMmH=sliceH/ratio;
+        pdf.addImage(sliceImg,'PNG',margin,margin,maxW,sliceMmH);
+        srcY+=sliceH;
+        if(srcY<canvas.height)pdf.addPage();
+      }
+    }
+    const per=(resData?.periodo||'').replace(/[^a-zA-Z\u00C0-\u024F0-9]/g,'_').replace(/_+/g,'_').slice(0,20);
+    pdf.save('Resumen_AALL'+(per?'_'+per:'')+'.pdf');
+  }catch(err){
+    window.print();
+  }
+  btn.disabled=false;btn.innerHTML=origText;
+}
+
+// Email resumen (downloads PDF first, then opens mailto)
+async function sendResumenEmail(){
+  if(!resData)return;
+  // Download PDF first
+  await exportResumenPdf();
+  const hora=new Date().getHours();
+  const saludo=hora<14?'Buenos d\u00edas':'Buenas tardes';
+  const titulo=resData.titulo||'Resumen de Reuniones - Asambleas Locales';
+  const periodo=resData.periodo?(' - '+resData.periodo):'';
+  const subject='Informe: '+titulo+periodo;
+  const body=saludo+',\n\nAdjunto el informe "'+titulo+'"'+(resData.periodo?' correspondiente al per\u00edodo '+resData.periodo:'')+'.'+'\n\nEl informe incluye un resumen con logros y aspectos a mejorar por cada Asamblea Local ('+((resData.reuniones||[]).length)+' asambleas analizadas).'+'\n\n(El PDF se ha descargado autom\u00e1ticamente. Por favor, adj\u00fantalo a este email.)'+'\n\nQuedo a vuestra disposici\u00f3n para cualquier duda o aclaraci\u00f3n.\n\nUn saludo,\n'+(resData.responsable||'David Martin Requena').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+  setTimeout(()=>{window.location.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);},800);
 }
 
 function showResErr(m){

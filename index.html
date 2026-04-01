@@ -763,7 +763,16 @@ async function exportPdf(){
   const origText=btn.innerHTML;
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generando PDF...';
   try{
-    const canvas=await html2canvas(previewEl,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false});
+    // Render at a fixed A4-proportional width so the PDF always looks consistent
+    const wrap=document.createElement('div');
+    wrap.style.cssText='position:fixed;left:-9999px;top:0;width:700px;background:#fff;overflow:visible;';
+    const clone=previewEl.cloneNode(true);
+    clone.style.width='700px';
+    wrap.appendChild(clone);
+    document.body.appendChild(wrap);
+    await new Promise(r=>setTimeout(r,80));
+    const canvas=await html2canvas(clone,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false});
+    document.body.removeChild(wrap);
     const imgData=canvas.toDataURL('image/png');
     const jsPDFLib=window.jspdf||window.jsPDF;
     const {jsPDF}=jsPDFLib||{};
@@ -771,7 +780,7 @@ async function exportPdf(){
     const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
     const pageW=pdf.internal.pageSize.getWidth();
     const pageH=pdf.internal.pageSize.getHeight();
-    const margin=10;
+    const margin=20;
     const maxW=pageW-margin*2;
     const ratio=canvas.width/maxW;
     const fullImgH=canvas.height/ratio;
@@ -855,33 +864,53 @@ function downloadDoc(){
   if(!acta)return;const a=acta;
   const lbl='font-family:Montserrat,Arial;font-size:9pt;color:#fff;font-weight:bold;';
   const val='font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;';
-  const rows=(a.contenido||[]).map((item,i)=>{
-    const bg=i%2===0?'#fff':GREY;
-    const obs=e(item.observaciones||'').split('|').map(l=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:3pt 0 0 0;">'+l.trim()+'</p>').join('');
-    return '<tr><td style="width:128pt;border:1pt solid '+BRD+';background:#fff;padding:5pt;vertical-align:middle;"><p style="font-family:Montserrat,Arial;font-size:9pt;color:'+NAVY+';font-weight:bold;text-align:center;margin:0;">'+e((item.asunto||'').toUpperCase())+'</p></td><td style="width:354pt;border:1pt solid '+BRD+';background:'+bg+';padding:5pt;vertical-align:top;">'+obs+'</td></tr>';
-  }).join('');
-  const ag=(a.agenda||[]).map((x,i)=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:1pt 0;">'+(i+1)+'.&nbsp;&nbsp;'+e(x)+'</p>').join('');
   const _tdN='font-family:Montserrat,Arial;font-size:10pt;padding:1pt 3pt;width:50%;color:'+DARK+';';
   const _tdC='font-family:Montserrat,Arial;font-size:10pt;padding:1pt 3pt;color:'+DARK+';';
   const asiTR=(a.asistentes||[]).map(x=>'<tr><td style="'+_tdN+'">'+e(x.nombre)+'</td><td style="'+_tdC+'">'+e(x.cargo||'')+'</td></tr>').join('');
   const excTR=(a.excusan||[]).map(x=>'<tr><td style="'+_tdN+'color:#555;">'+e(x.nombre)+'</td><td style="'+_tdC+'color:#555;">'+e(x.cargo||'')+'</td></tr>').join('');
-  const asi=asiTR?'<table style="width:100%;border-collapse:collapse;">'+asiTR+'</table>':'&mdash;';
-  const exc=excTR?'<table style="width:100%;border-collapse:collapse;">'+excTR+'</table>':'&mdash;';
-  const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>@page{size:21cm 29.7cm;margin:3.3cm 2.0cm 1.9cm 2.0cm;}body{font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';margin:0;}table{border-collapse:collapse;}p{margin:0;line-height:1.3;}</style></head><body>'+
-    '<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:6pt;border-bottom:1.5pt solid '+NAVY+';margin-bottom:10pt;"><img src="data:image/jpeg;base64,'+LOGO+'" style="height:26pt;" alt="Cruz Roja"/><span style="font-family:Montserrat,Arial;font-size:9pt;color:'+BRD+';">'+e(a.fecha||'')+'</span></div>'+
-    '<p style="margin:4pt 0;">&nbsp;</p>'+
-    '<table style="width:482pt;border-collapse:collapse;margin-bottom:12pt;">'+
-    '<tr><td style="width:128pt;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+lbl+'margin:0;">Denominaci&oacute;n</p></td><td colspan="2" style="width:354pt;border:1pt solid '+BRD+';padding:5pt;"><p style="'+val+'font-weight:bold;margin:0;">'+e((a.denominacion||'').toUpperCase())+'</p></td></tr>'+
-    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+lbl+'margin:0;">Fecha y Horario</p></td><td colspan="2" style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+val+'margin:0;">Fecha: '+e(a.fecha||'')+'&nbsp;&nbsp;'+e(a.hora_inicio||'')+(a.hora_fin?' a '+e(a.hora_fin):'')+' horas</p></td></tr>'+
-    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+lbl+'margin:0;">Modalidad</p></td><td colspan="2" style="border:1pt solid '+BRD+';padding:5pt;"><p style="'+val+'margin:0;">'+e(a.modalidad||'')+'</p></td></tr>'+
-    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+lbl+'margin:0;">Presidida por</p></td><td colspan="2" style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+val+'margin:0;">'+e(a.presidida_por||'')+'</p></td></tr>'+
-    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+lbl+'margin:0;">Redactado por</p></td><td colspan="2" style="border:1pt solid '+BRD+';padding:5pt;"><p style="'+val+'margin:0;">'+e(a.redactado_por||'')+'</p></td></tr>'+
-    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Asistentes</p><p style="'+lbl+'margin:2pt 0 0 0;">Excusan asistencia</p></td><td style="width:177pt;border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">'+(asi||'&mdash;')+'</p></td><td style="width:177pt;border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;color:#555;">'+(exc||'&mdash;')+'</p></td></tr>'+
-    '</table>'+
+  const asiTable=asiTR?'<table style="width:100%;border-collapse:collapse;">'+asiTR+'</table>':'&mdash;';
+  const excTable=excTR?'<table style="width:100%;border-collapse:collapse;">'+excTR+'</table>':'';
+  const rows=(a.contenido||[]).map((item,i)=>{
+    const bg=i%2===0?'#fff':GREY;
+    const obs=e(item.observaciones||'').split('|').map(l=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:3pt 0 0 0;">'+l.trim()+'</p>').join('');
+    return '<tr><td style="width:27%;border:1pt solid '+BRD+';background:#fff;padding:5pt;vertical-align:middle;"><p style="font-family:Montserrat,Arial;font-size:9pt;color:'+NAVY+';font-weight:bold;text-align:center;margin:0;">'+e((item.asunto||'').toUpperCase())+'</p></td><td style="border:1pt solid '+BRD+';background:'+bg+';padding:5pt;vertical-align:top;">'+obs+'</td></tr>';
+  }).join('');
+  const ag=(a.agenda||[]).map((x,i)=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:1pt 0;">'+(i+1)+'.&nbsp;&nbsp;'+e(x)+'</p>').join('');
+  // Header: table layout (Word does not support display:flex)
+  const hdr=
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:10pt;">'+
+    '<tr>'+
+    '<td style="padding-bottom:6pt;border-bottom:1.5pt solid '+NAVY+';vertical-align:middle;">'+
+    '<img src="data:image/jpeg;base64,'+LOGO+'" style="height:26pt;" alt="Cruz Roja"/>'+
+    '</td>'+
+    '<td style="padding-bottom:6pt;border-bottom:1.5pt solid '+NAVY+';vertical-align:middle;text-align:right;">'+
+    '<span style="font-family:Montserrat,Arial;font-size:9pt;color:'+BRD+';">'+e(a.fecha||'')+'</span>'+
+    '</td>'+
+    '</tr></table>';
+  // Meta rows: 2-column structure matching the preview (label | value)
+  const metaRows=
+    '<tr><td style="width:27%;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Denominaci&oacute;n</p></td>'+
+    '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'font-weight:bold;margin:0;">'+e((a.denominacion||'').toUpperCase())+'</p></td></tr>'+
+    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Fecha y Horario</p></td>'+
+    '<td style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">Fecha: '+e(a.fecha||'')+'&nbsp;&nbsp;'+e(a.hora_inicio||'')+(a.hora_fin?' a '+e(a.hora_fin):'')+' horas</p></td></tr>'+
+    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Modalidad</p></td>'+
+    '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">'+e(a.modalidad||'')+'</p></td></tr>'+
+    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Presidida por</p></td>'+
+    '<td style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">'+e(a.presidida_por||'')+'</p></td></tr>'+
+    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Redactado por</p></td>'+
+    '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">'+e(a.redactado_por||'')+'</p></td></tr>'+
+    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Asistentes</p></td>'+
+    '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;">'+asiTable+'</td></tr>'+
+    (excTable?'<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'font-weight:400;font-size:8pt;margin:0;">Excusan asistencia</p></td>'+
+    '<td style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;">'+excTable+'</td></tr>':'');
+  const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>@page{size:21cm 29.7cm;margin:2.5cm 2.0cm 2.0cm 2.0cm;}body{font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';margin:0;}table{border-collapse:collapse;width:100%;}p{margin:0;line-height:1.4;}</style></head><body>'+
+    hdr+
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:12pt;">'+metaRows+'</table>'+
     '<p style="font-family:Montserrat,Arial;font-size:14pt;color:'+NAVY+';font-weight:bold;margin:0 0 6pt 0;">Orden del d&iacute;a &ndash; Temas tratados</p>'+ag+
     '<p style="margin:10pt 0;">&nbsp;</p>'+
-    '<table style="width:482pt;border-collapse:collapse;">'+
-    '<tr><td style="width:128pt;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">ASUNTO</p></td><td style="width:354pt;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">OBSERVACIONES</p></td></tr>'+rows+
+    '<table style="width:100%;border-collapse:collapse;">'+
+    '<tr><td style="width:27%;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">ASUNTO</p></td>'+
+    '<td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">OBSERVACIONES</p></td></tr>'+rows+
     '</table></body></html>';
   const blob=new Blob(['\ufeff',doc],{type:'application/msword'});
   const url=URL.createObjectURL(blob);

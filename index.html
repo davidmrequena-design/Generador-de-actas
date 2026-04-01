@@ -6,6 +6,8 @@
 <title>Generador de Actas · Cruz Roja Madrid</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js"></script>
 <style>
 :root{--navy:#011e41;--red:#f5333f;--grey:#ededed;--dark:#323232;--brd:#58595b;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -147,13 +149,60 @@ select.field-inp{cursor:pointer;}
   .parti-row{grid-template-columns:1fr auto auto auto;}
   .btn-row{flex-direction:column;}
 }
+/* APP NAV */
+#app-nav{background:var(--navy);display:flex;gap:0;border-bottom:2px solid rgba(255,255,255,.08);}
+.app-nav-tab{padding:10px 22px;color:#7ea8cc;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;letter-spacing:.03em;font-family:'Montserrat',sans-serif;}
+.app-nav-tab:hover{color:#fff;background:rgba(255,255,255,.06);}
+.app-nav-tab.active{color:#fff;border-bottom-color:var(--red);}
+/* RESUMEN PANEL */
+#tab-resumen{display:none;padding:22px;background:#fff;max-width:900px;margin:0 auto;}
+.res-transcript-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.res-transcript-item{border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;}
+.res-transcript-hdr{background:#f8fafc;padding:8px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e5e7eb;}
+.res-transcript-hdr input{flex:1;border:none;background:transparent;font-size:12px;font-weight:600;color:var(--navy);outline:none;font-family:'Montserrat',sans-serif;}
+.res-transcript-body{padding:10px 12px;}
+.res-transcript-body textarea{width:100%;min-height:90px;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:11px;font-family:'Montserrat',sans-serif;resize:vertical;outline:none;color:var(--dark);line-height:1.5;}
+.res-transcript-body textarea:focus{border-color:var(--navy);}
+.btn-del-transcript{background:none;border:none;cursor:pointer;color:#ef4444;font-size:16px;line-height:1;padding:2px 6px;}
+.btn-del-transcript:hover{color:#dc2626;}
+#btn-add-transcript{padding:8px 14px;background:#f1f5f9;border:1px dashed #94a3b8;border-radius:7px;cursor:pointer;font-size:11px;color:#475569;font-weight:500;margin-bottom:14px;display:block;width:100%;font-family:'Montserrat',sans-serif;}
+#btn-add-transcript:hover{background:#e2e8f0;}
+#btn-gen-resumen{padding:11px;background:var(--red);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;width:100%;transition:opacity .15s;font-family:'Montserrat',sans-serif;}
+#btn-gen-resumen:disabled{background:#94a3b8;cursor:not-allowed;}
+#btn-gen-resumen:not(:disabled):hover{opacity:.88;}
+#resumen-err{display:none;color:#dc2626;font-size:12px;margin-top:10px;padding:8px 12px;background:#fee2e2;border-radius:8px;line-height:1.5;}
+/* RESUMEN OUTPUT */
+#resumen-output{display:none;margin-top:18px;}
+.res-out-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--red);}
+.res-asamblea{margin-bottom:16px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;}
+.res-asamblea-hdr{background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:10px 14px;display:flex;align-items:center;gap:8px;}
+.res-asamblea-body{padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.res-asamblea-body{grid-template-columns:1fr;}}
+.res-section{background:#f8fafc;border-radius:8px;padding:10px 12px;}
+.res-section-title{font-size:10px;font-weight:700;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:5px;text-transform:uppercase;}
+.res-section-title.logros{color:#15803d;}
+.res-section-title.mejoras{color:#b45309;}
+.res-section.logros-sec{border-left:3px solid #15803d;}
+.res-section.mejoras-sec{border-left:3px solid #b45309;}
+.res-item{font-size:11px;color:var(--dark);padding:3px 0 3px 16px;position:relative;line-height:1.5;}
+.res-item::before{position:absolute;left:0;font-weight:700;}
+.res-logro::before{content:'✓';color:#15803d;}
+.res-mejora::before{content:'⚠';color:#b45309;}
+.res-global{margin-top:18px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:14px;}
+.res-global-title{font-size:12px;font-weight:700;color:#0369a1;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.res-global-item{font-size:11px;color:var(--dark);padding:3px 0 3px 16px;position:relative;line-height:1.5;}
+.res-global-item::before{content:'→';position:absolute;left:0;color:#0369a1;font-weight:700;}
+.res-dl-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+#btn-print-resumen{padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:'Montserrat',sans-serif;}
+#btn-print-resumen:hover{opacity:.88;}
 /* PRINT */
 @media print{
-  #api-toggle-bar,#apibar,#input-panel,#btn-close-preview{display:none!important;}
+  #api-toggle-bar,#apibar,#app-nav,#input-panel,#btn-close-preview,#tab-resumen .res-dl-row,#tab-resumen #btn-add-transcript,#tab-resumen #btn-gen-resumen,#tab-resumen .res-transcript-list{display:none!important;}
   #body{display:block!important;}
   #body.has-preview{display:block!important;}
   #preview-panel{display:block!important;padding:0;border:none;overflow:visible;}
   #app{box-shadow:none;margin:0;border-radius:0;}
+  #tab-resumen{display:block!important;}
 }
 </style>
 </head>
@@ -175,6 +224,11 @@ select.field-inp{cursor:pointer;}
     <button id="btn-key-toggle" onclick="toggleKeyEnabled()"></button>
     <span class="key-hint">Obt&eacute;n tu clave en <a href="https://console.anthropic.com" target="_blank" style="color:#7ea8cc;">console.anthropic.com</a> &rarr; API Keys</span>
   </div>
+  <div id="app-nav">
+    <button class="app-nav-tab active" onclick="switchAppTab('actas',this)">&#128203; Generador de Actas</button>
+    <button class="app-nav-tab" onclick="switchAppTab('resumen',this)">&#128202; Resumen de Reuniones</button>
+  </div>
+  <div id="tab-actas">
   <div id="body">
     <div id="input-panel">
       <!-- DATOS DE LA REUNIÓN -->
@@ -290,8 +344,19 @@ select.field-inp{cursor:pointer;}
       <div class="pvl">VISTA PREVIA</div>
       <div id="pc"></div>
     </div>
+  </div><!-- /#body -->
+  </div><!-- /#tab-actas -->
+  <div id="tab-resumen" style="display:none">
+    <div style="max-width:820px;margin:0 auto;padding:22px;">
+      <div style="font-size:12px;color:#374151;margin-bottom:16px;line-height:1.6;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px 14px;">&#128161; Pega las transcripciones o res&uacute;menes de varias reuniones y genera un informe consolidado con logros y aspectos a mejorar por asamblea.</div>
+      <div class="res-transcript-list" id="res-transcript-list"></div>
+      <button id="btn-add-transcript" onclick="addTranscript()">+ A&ntilde;adir otra reuni&oacute;n</button>
+      <button id="btn-gen-resumen" onclick="generateResumen()">&#10024; Generar Resumen</button>
+      <div id="resumen-err"></div>
+      <div id="resumen-output"></div>
+    </div>
   </div>
-</div>
+</div><!-- /#app -->
 <script>
 const NAVY="#011e41",RED="#f5333f",GREY="#ededed",DARK="#323232",BRD="#58595b";
 const LOGO="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";
@@ -583,8 +648,49 @@ function closePreview(){
 }
 
 // PDF export
-function exportPdf(){
-  window.print();
+async function exportPdf(){
+  const previewEl=document.getElementById('pc');
+  if(!previewEl||!previewEl.innerHTML.trim()){window.print();return;}
+  const btn=document.getElementById('btn-pdf');
+  const origText=btn.innerHTML;
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generando PDF...';
+  try{
+    const canvas=await html2canvas(previewEl,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false});
+    const imgData=canvas.toDataURL('image/png');
+    const jsPDFLib=window.jspdf||window.jsPDF;
+    const {jsPDF}=jsPDFLib||{};
+    if(!jsPDF){window.print();return;}
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const pageW=pdf.internal.pageSize.getWidth();
+    const pageH=pdf.internal.pageSize.getHeight();
+    const margin=10;
+    const maxW=pageW-margin*2;
+    const ratio=canvas.width/maxW;
+    const fullImgH=canvas.height/ratio;
+    const maxImgHPerPage=pageH-margin*2;
+    if(fullImgH<=maxImgHPerPage){
+      pdf.addImage(imgData,'PNG',margin,margin,maxW,fullImgH);
+    }else{
+      const rowPx=Math.floor(maxImgHPerPage*ratio);
+      let srcY=0;
+      while(srcY<canvas.height){
+        const sliceH=Math.min(rowPx,canvas.height-srcY);
+        const tmp=document.createElement('canvas');
+        tmp.width=canvas.width;tmp.height=sliceH;
+        tmp.getContext('2d').drawImage(canvas,0,srcY,canvas.width,sliceH,0,0,canvas.width,sliceH);
+        const sliceImg=tmp.toDataURL('image/png');
+        const sliceMmH=sliceH/ratio;
+        pdf.addImage(sliceImg,'PNG',margin,margin,maxW,sliceMmH);
+        srcY+=sliceH;
+        if(srcY<canvas.height)pdf.addPage();
+      }
+    }
+    const den=(acta?.denominacion||'acta').replace(/[^a-zA-Z\u00C0-\u024F0-9]/g,'_').replace(/_+/g,'_').slice(0,35);
+    pdf.save('Acta_'+den+'_'+(acta?.fecha||'').replace(/\//g,'-')+'.pdf');
+  }catch(err){
+    window.print();
+  }
+  btn.disabled=false;btn.innerHTML=origText;
 }
 
 // Email
@@ -705,9 +811,123 @@ document.addEventListener('keydown',function(evt){
   if((evt.ctrlKey||evt.metaKey)&&evt.key==='s'){evt.preventDefault();if(acta)downloadDoc();}
 });
 
+// App-level tab switching
+function switchAppTab(t,btn){
+  document.getElementById('tab-actas').style.display=t==='actas'?'':'none';
+  document.getElementById('tab-resumen').style.display=t==='resumen'?'block':'none';
+  document.querySelectorAll('.app-nav-tab').forEach(b=>b.classList.toggle('active',b===btn));
+}
+
+// ============================================================
+// RESUMEN DE REUNIONES
+// ============================================================
+let resTranscripts=[{name:'Reuni\u00f3n 1',text:''}];
+const MAX_TRANSCRIPTS=20;
+
+function renderResTranscripts(){
+  const list=document.getElementById('res-transcript-list');
+  list.innerHTML=resTranscripts.map((t,i)=>
+    '<div class="res-transcript-item">'+
+      '<div class="res-transcript-hdr">'+
+        '<span>&#128203;</span>'+
+        '<input type="text" value="'+e(t.name)+'" placeholder="Nombre de la reuni\u00f3n..." oninput="resTranscripts['+i+'].name=this.value">'+
+        (resTranscripts.length>1?'<button class="btn-del-transcript" onclick="delTranscript('+i+')" title="Eliminar">&#10005;</button>':'')+
+      '</div>'+
+      '<div class="res-transcript-body">'+
+        '<textarea placeholder="Pega aqu\u00ed la transcripci\u00f3n o resumen de esta reuni\u00f3n..." oninput="resTranscripts['+i+'].text=this.value">'+e(t.text)+'</textarea>'+
+      '</div>'+
+    '</div>'
+  ).join('');
+}
+
+function addTranscript(){
+  if(resTranscripts.length>=MAX_TRANSCRIPTS)return;
+  resTranscripts.push({name:'Reuni\u00f3n '+(resTranscripts.length+1),text:''});
+  renderResTranscripts();
+}
+
+function delTranscript(i){
+  if(resTranscripts.length<=1)return;
+  resTranscripts.splice(i,1);
+  renderResTranscripts();
+}
+
+const SYS_RESUMEN=`Eres un experto en analisis de reuniones institucionales de Cruz Roja Madrid.
+Analiza las transcripciones o resumenes de reuniones y genera un informe estructurado en JSON.
+REGLAS: Devuelve SOLO JSON valido. Sin backticks. Sin texto adicional.
+JSON: {"reuniones":[{"nombre":"Nombre reunion","logros":["logro positivo 1","logro 2"],"mejoras":["aspecto a mejorar 1"]}],"conclusiones_globales":["conclusion global 1","conclusion 2"]}
+Los logros son aspectos positivos, acuerdos alcanzados, avances. Las mejoras son retos, problemas o aspectos a trabajar.`;
+
+async function generateResumen(){
+  const key=keyEnabled?keyEl.value.trim():'';
+  if(!key){showResErr('Configura tu API Key de Anthropic primero (bot\u00f3n \u2699\uFE0F Configuraci\u00f3n API).');return;}
+  const filled=resTranscripts.filter(t=>t.text.trim());
+  if(!filled.length){showResErr('A\u00f1ade al menos una transcripci\u00f3n con contenido.');return;}
+  const btn=document.getElementById('btn-gen-resumen');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Analizando reuniones...';
+  document.getElementById('resumen-err').style.display='none';
+  document.getElementById('resumen-output').style.display='none';
+  const prompt=filled.map(t=>'=== REUNI\u00d3N: '+t.name+' ===\n'+t.text).join('\n\n');
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:4096,system:SYS_RESUMEN,messages:[{role:'user',content:'Analiza estas reuniones y devuelve el JSON:\n\n'+prompt}]})
+    });
+    if(!resp.ok){const er=await resp.json().catch(()=>({}));throw new Error(er.error?.message||'Error HTTP '+resp.status);}
+    const data=await resp.json();
+    const raw=(data.content?.find(c=>c.type==='text')?.text||'{}').replace(/```json|```/g,'').trim();
+    const result=JSON.parse(raw);
+    renderResumen(result);
+  }catch(err){
+    let m=err.message;
+    if(m.includes('401')||m.includes('authentication'))m='API Key incorrecta.';
+    else if(m.includes('credit')||m.includes('billing'))m='Cr\u00e9dito agotado en console.anthropic.com';
+    else if(m.includes('JSON'))m='Error al procesar la respuesta. Intenta de nuevo.';
+    showResErr(m);
+  }
+  btn.disabled=false;btn.innerHTML='&#10024; Generar Resumen';
+}
+
+function renderResumen(data){
+  const output=document.getElementById('resumen-output');
+  const reuniones=(data.reuniones||[]).map(r=>{
+    const logros=(r.logros||[]).map(l=>'<div class="res-item res-logro">'+e(l)+'</div>').join('');
+    const mejoras=(r.mejoras||[]).map(m=>'<div class="res-item res-mejora">'+e(m)+'</div>').join('');
+    return '<div class="res-asamblea">'+
+      '<div class="res-asamblea-hdr"><span>&#128203;</span>'+e(r.nombre||'')+'</div>'+
+      '<div class="res-asamblea-body">'+
+        (logros?'<div class="res-section logros-sec"><div class="res-section-title logros">&#10003; Logros y aspectos positivos</div>'+logros+'</div>':'<div class="res-section logros-sec"><div class="res-section-title logros">&#10003; Sin logros registrados</div></div>')+
+        (mejoras?'<div class="res-section mejoras-sec"><div class="res-section-title mejoras">&#9888; Aspectos a mejorar</div>'+mejoras+'</div>':'<div class="res-section mejoras-sec"><div class="res-section-title mejoras">&#9888; Sin aspectos a mejorar</div></div>')+
+      '</div>'+
+    '</div>';
+  }).join('');
+  const globales=(data.conclusiones_globales&&data.conclusiones_globales.length)?
+    '<div class="res-global">'+
+      '<div class="res-global-title">&#127758; Conclusiones Globales</div>'+
+      data.conclusiones_globales.map(c=>'<div class="res-global-item">'+e(c)+'</div>').join('')+
+    '</div>':'';
+  output.innerHTML=
+    '<div class="res-out-title">&#128202; Resumen de Reuniones</div>'+
+    reuniones+globales+
+    '<div class="res-dl-row"><button id="btn-print-resumen" onclick="window.print()">&#128462; Imprimir / Guardar PDF</button></div>';
+  output.style.display='block';
+}
+
+function showResErr(m){
+  const el=document.getElementById('resumen-err');
+  el.textContent=m;el.style.display='block';
+}
+
 // Init
 renderContacts();
 loadForm();
+renderResTranscripts();
 </script>
 </body>
 </html>

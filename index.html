@@ -6,53 +6,129 @@
 <title>Generador de Actas · Cruz Roja Madrid</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <style>
 :root{--navy:#011e41;--red:#f5333f;--grey:#ededed;--dark:#323232;--brd:#58595b;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Montserrat',system-ui,sans-serif;background:#f0f2f5;min-height:100vh;}
-input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
+input,textarea,button,select{font-family:'Montserrat',system-ui,sans-serif;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-thumb{background:#b0bec5;border-radius:3px;}
 #app{max-width:1200px;margin:24px auto 40px;box-shadow:0 2px 20px rgba(0,0,0,.12);border-radius:12px;overflow:hidden;}
+/* HEADER */
 #hdr{background:var(--navy);border-bottom:3px solid var(--red);padding:12px 20px;display:flex;align-items:center;gap:12px;}
 .hdr-logo{height:30px;background:#fff;border-radius:6px;padding:3px 8px;}
 .hdr-title{color:#fff;font-weight:600;font-size:15px;line-height:1.2;}
 .hdr-sub{font-size:10px;color:#7ea8cc;margin-top:2px;}
-#apibar{background:#012a55;padding:8px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+/* API CONFIG BAR */
+#api-toggle-bar{background:#011e41;padding:6px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.1);}
+#btn-api-toggle{background:transparent;border:1px solid rgba(255,255,255,.2);color:#a8c4e0;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;transition:all .15s;}
+#btn-api-toggle:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.4);}
+#apibar{background:#012a55;padding:8px 20px;display:none;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.1);}
+#apibar.visible{display:flex;}
 #apibar label{color:#a8c4e0;font-size:11px;font-weight:500;white-space:nowrap;}
 #apikey{flex:1;min-width:200px;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:12px;outline:none;}
 #apikey::placeholder{color:#6a8aa8;}
 #apikey:focus{border-color:rgba(255,255,255,.5);}
+#apikey.key-disabled{opacity:.4;pointer-events:none;}
+#btn-key-toggle{padding:4px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.25);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;}
+#btn-key-toggle.enabled{background:#166534;color:#bbf7d0;border-color:#166534;}
+#btn-key-toggle.enabled:hover{background:#15803d;}
+#btn-key-toggle.disabled{background:#7f1d1d;color:#fecaca;border-color:#7f1d1d;}
+#btn-key-toggle.disabled:hover{background:#991b1b;}
 .key-hint{color:#6a8aa8;font-size:10px;}
+/* MAIN BODY */
 #body{display:grid;grid-template-columns:1fr;background:#fff;}
-#body.has-preview{grid-template-columns:42% 58%;}
+#body.has-preview{grid-template-columns:45% 55%;}
 #input-panel{padding:20px;}
 #body.has-preview #input-panel{border-right:1px solid #e5e7eb;}
+/* COLLAPSIBLE SECTIONS */
+.section-wrap{margin-bottom:14px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;}
+.section-hdr{background:#f8fafc;padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;user-select:none;font-size:13px;font-weight:600;color:var(--navy);}
+.section-hdr:hover{background:#f1f5f9;}
+.section-arrow{transition:transform .2s;font-size:10px;color:#9ca3af;}
+.section-hdr.open .section-arrow{transform:rotate(90deg);}
+.section-body{padding:14px;display:none;}
+.section-body.open{display:block;}
+/* FORM FIELDS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.form-grid.cols-3{grid-template-columns:1fr 1fr 1fr;}
+.field-wrap{display:flex;flex-direction:column;gap:4px;}
+.field-wrap.full{grid-column:1/-1;}
+.field-label{font-size:11px;font-weight:500;color:#374151;}
+.field-inp{padding:7px 10px;border:1px solid #d1d5db;border-radius:7px;font-size:12px;color:var(--dark);outline:none;width:100%;}
+.field-inp:focus{border-color:var(--navy);}
+select.field-inp{cursor:pointer;}
+/* PARTICIPANTS */
+#parti-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.parti-row{display:grid;grid-template-columns:1fr 1fr auto auto;gap:6px;align-items:center;}
+.parti-row input{padding:6px 8px;border:1px solid #d1d5db;border-radius:6px;font-size:11px;font-family:'Montserrat',sans-serif;outline:none;width:100%;}
+.parti-row input:focus{border-color:var(--navy);}
+.parti-check{width:16px;height:16px;cursor:pointer;accent-color:var(--navy);}
+.btn-del-parti{background:none;border:none;cursor:pointer;color:#ef4444;font-size:15px;padding:2px 6px;line-height:1;}
+.btn-del-parti:hover{color:#dc2626;}
+.btn-add-parti{padding:6px 12px;background:#f1f5f9;border:1px dashed #94a3b8;border-radius:7px;cursor:pointer;font-size:11px;color:#475569;font-weight:500;width:100%;margin-bottom:8px;}
+.btn-add-parti:hover{background:#e2e8f0;}
+/* CONTACTS CHIPS */
+#contacts-area{margin-bottom:6px;}
+.contacts-label{font-size:10px;color:#6b7280;margin-bottom:4px;}
+#contacts-chips{display:flex;flex-wrap:wrap;gap:4px;}
+.chip{padding:3px 10px;background:#e0e7ff;color:#3730a3;border-radius:20px;font-size:10px;cursor:pointer;display:flex;align-items:center;gap:4px;border:none;}
+.chip:hover{background:#c7d2fe;}
+.chip-del{color:#6366f1;font-weight:700;background:none;border:none;cursor:pointer;font-size:12px;line-height:1;padding:0 0 0 2px;}
+.chip-del:hover{color:#4338ca;}
+/* TABS */
 .tabs{display:flex;gap:7px;margin-bottom:14px;}
 .tab{padding:7px 14px;border-radius:8px;border:1px solid #d1d5db;background:#f9fafb;color:#374151;cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;}
 .tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
 .tab:hover:not(.active){background:#f1f5f9;}
-.upload-zone{min-height:140px;border:2px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:#f9fafb;padding:20px;transition:border-color .2s;text-align:center;}
-.upload-zone:hover{border-color:var(--navy);}
+/* UPLOAD */
+.upload-zone{min-height:120px;border:2px dashed #d1d5db;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;background:#f9fafb;padding:20px;transition:border-color .2s,background .2s;text-align:center;}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--navy);background:#f0f5ff;}
+/* BULK DROP ZONE */
+.res-bulk-zone{min-height:110px;border:2px dashed #7ea8cc;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;background:#f0f9ff;padding:16px;transition:border-color .2s,background .2s;text-align:center;margin-bottom:12px;}
+.res-bulk-zone:hover,.res-bulk-zone.drag-over{border-color:var(--navy);background:#e0f2fe;}
+.res-bulk-icon{font-size:28px;line-height:1;}
+.res-bulk-lbl{font-size:12px;font-weight:600;color:#0369a1;}
+.res-bulk-sub{font-size:10px;color:#64748b;}
+.res-bulk-badge{display:inline-block;background:#dcfce7;color:#15803d;font-size:10px;font-weight:600;padding:2px 9px;border-radius:12px;margin-top:2px;}
 .zone-icon{font-size:32px;}
 .zone-lbl{font-size:13px;color:#6b7280;}
 .zone-sub{font-size:11px;color:#9ca3af;}
 .ok-badge{font-size:11px;color:#15803d;background:#dcfce7;padding:3px 10px;border-radius:20px;}
-#txt{width:100%;min-height:240px;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;resize:vertical;line-height:1.6;color:var(--dark);outline:none;font-family:'Montserrat',sans-serif;}
+#txt{width:100%;min-height:200px;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;resize:vertical;line-height:1.6;color:var(--dark);outline:none;font-family:'Montserrat',sans-serif;}
 #txt:focus{border-color:var(--navy);}
 #img-thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center;}
 .thumb{height:65px;border-radius:6px;border:1px solid #e5e7eb;object-fit:cover;}
-.btn-row{display:flex;gap:8px;margin-top:14px;}
-#btn-gen{flex:1;padding:11px;background:var(--red);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:opacity .15s;}
+/* BUTTONS */
+.btn-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+#btn-gen{flex:1;padding:11px;background:var(--red);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:opacity .15s;min-width:160px;}
 #btn-gen:disabled{background:#94a3b8;cursor:not-allowed;}
 #btn-gen:not(:disabled):hover{opacity:.88;}
 #btn-dl{display:none;padding:11px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;}
 #btn-dl:hover{opacity:.88;}
+#btn-pdf{display:none;padding:11px 18px;background:#374151;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;}
+#btn-pdf:hover{opacity:.88;}
+/* EMAIL BUTTONS */
+#email-area{display:none;margin-top:12px;padding:12px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;}
+.email-label{font-size:11px;color:#0369a1;font-weight:600;margin-bottom:8px;}
+.email-btns{display:flex;gap:8px;flex-wrap:wrap;}
+#btn-email{padding:8px 14px;background:#0369a1;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;}
+#btn-email:hover{opacity:.88;}
+#btn-copy-email{padding:8px 14px;background:#fff;color:#0369a1;border:1px solid #0369a1;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;}
+#btn-copy-email:hover{background:#f0f9ff;}
+/* MESSAGES */
 #err{display:none;color:#dc2626;font-size:12px;margin-top:10px;padding:8px 12px;background:#fee2e2;border-radius:8px;line-height:1.5;white-space:pre-line;}
 #succ{display:none;color:#15803d;font-size:11px;margin-top:10px;padding:8px 12px;background:#dcfce7;border-radius:8px;}
+/* SPINNER */
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
-#preview-panel{display:none;padding:18px;overflow-y:auto;max-height:700px;background:#f8fafc;border-left:1px solid #e5e7eb;}
+/* PREVIEW PANEL */
+#preview-panel{display:none;padding:18px;overflow-y:auto;background:#f8fafc;border-left:1px solid #e5e7eb;position:relative;}
+#btn-close-preview{position:absolute;top:10px;right:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:13px;padding:3px 9px;color:#475569;font-weight:600;z-index:10;}
+#btn-close-preview:hover{background:#e2e8f0;}
 .pvl{font-size:10px;color:#6b7280;font-weight:600;letter-spacing:.06em;margin-bottom:10px;}
 #pc{font-family:'Montserrat',Arial,sans-serif;font-size:12px;}
 #pc .logo-bar{display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:2px solid var(--navy);margin-bottom:12px;}
@@ -69,6 +145,101 @@ input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
 #pc .co{color:var(--dark);text-align:justify;font-size:10px;vertical-align:top;}
 #pc .co.alt{background:var(--grey);}
 #pc p{margin:0;line-height:1.4;}#pc p+p{margin-top:3px;}
+/* RESPONSIVE */
+@media(max-width:900px){
+  #body.has-preview{grid-template-columns:1fr;}
+  #body.has-preview #input-panel{border-right:none;border-bottom:1px solid #e5e7eb;}
+  .form-grid{grid-template-columns:1fr;}
+  .form-grid.cols-3{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .form-grid,.form-grid.cols-3{grid-template-columns:1fr;}
+  .parti-row{grid-template-columns:1fr auto auto auto;}
+  .btn-row{flex-direction:column;}
+}
+/* APP NAV */
+#app-nav{background:var(--navy);display:flex;gap:0;border-bottom:2px solid rgba(255,255,255,.08);}
+.app-nav-tab{padding:10px 22px;color:#7ea8cc;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;letter-spacing:.03em;font-family:'Montserrat',sans-serif;}
+.app-nav-tab:hover{color:#fff;background:rgba(255,255,255,.06);}
+.app-nav-tab.active{color:#fff;border-bottom-color:var(--red);}
+/* RESUMEN TAB LAYOUT */
+#tab-resumen{display:none;background:#f8fafc;}
+.res-main{display:flex;min-height:600px;}
+.res-input-panel{flex:0 0 400px;max-width:420px;padding:20px;border-right:1px solid #e5e7eb;background:#fff;}
+#res-preview-panel{flex:1;padding:20px;background:#f8fafc;}
+@media(max-width:900px){.res-main{flex-direction:column;}.res-input-panel{flex:none;max-width:100%;}#res-preview-panel{}}
+/* META FIELDS */
+.res-meta-bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.res-meta-full{grid-column:1/-1;}
+.res-meta-lbl{display:block;font-size:10px;font-weight:600;color:#6b7280;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;}
+.res-meta-inp{width:100%;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:11px;outline:none;font-family:'Montserrat',sans-serif;color:var(--dark);}
+.res-meta-inp:focus{border-color:var(--navy);}
+/* TRANSCRIPT ITEMS */
+.res-transcript-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.res-transcript-item{border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;}
+.res-transcript-hdr{background:#f8fafc;padding:7px 10px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #e5e7eb;}
+.res-transcript-hdr input{flex:1;border:none;background:transparent;font-size:11px;font-weight:600;color:var(--navy);outline:none;font-family:'Montserrat',sans-serif;}
+.res-transcript-body{padding:8px 10px;}
+.res-docx-zone{display:flex;align-items:center;gap:7px;padding:5px 8px;background:#f0f9ff;border:1px dashed #7ea8cc;border-radius:5px;cursor:pointer;font-size:10px;color:#0369a1;margin-bottom:6px;transition:background .15s;}
+.res-docx-zone:hover{background:#e0f2fe;}
+.res-docx-name{color:#15803d;font-weight:600;}
+.res-transcript-body textarea{width:100%;min-height:70px;padding:6px 8px;border:1px solid #d1d5db;border-radius:5px;font-size:10px;font-family:'Montserrat',sans-serif;resize:vertical;outline:none;color:var(--dark);line-height:1.5;}
+.res-transcript-body textarea:focus{border-color:var(--navy);}
+.btn-del-transcript{background:none;border:none;cursor:pointer;color:#ef4444;font-size:15px;line-height:1;padding:2px 5px;}
+.btn-del-transcript:hover{color:#dc2626;}
+#btn-add-transcript{padding:7px 12px;background:#f1f5f9;border:1px dashed #94a3b8;border-radius:6px;cursor:pointer;font-size:10px;color:#475569;font-weight:500;margin-bottom:12px;display:block;width:100%;font-family:'Montserrat',sans-serif;}
+#btn-add-transcript:hover{background:#e2e8f0;}
+#btn-gen-resumen{padding:10px;background:var(--red);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;width:100%;transition:opacity .15s;font-family:'Montserrat',sans-serif;}
+#btn-gen-resumen:disabled{background:#94a3b8;cursor:not-allowed;}
+#btn-gen-resumen:not(:disabled):hover{opacity:.88;}
+#resumen-err{display:none;color:#dc2626;font-size:11px;margin-top:8px;padding:7px 10px;background:#fee2e2;border-radius:6px;line-height:1.5;}
+/* PREVIEW PANEL */
+.res-preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--red);flex-wrap:wrap;gap:8px;}
+.res-preview-label{font-size:10px;font-weight:700;letter-spacing:.1em;color:#9ca3af;}
+.res-dl-row{display:flex;gap:6px;flex-wrap:wrap;}
+.res-dl-btn{padding:7px 13px;border:none;border-radius:7px;cursor:pointer;font-size:11px;font-weight:600;font-family:'Montserrat',sans-serif;transition:opacity .15s;}
+.res-dl-btn:hover{opacity:.85;}
+.res-dl-btn.docx{background:var(--navy);color:#fff;}
+.res-dl-btn.pdf{background:#1e40af;color:#fff;}
+.res-dl-btn.email{background:#059669;color:#fff;}
+/* PREVIEW OUTPUT STYLES */
+#res-preview-content{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:20px;}
+.res-out-logo-bar{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:3px solid var(--red);margin-bottom:16px;}
+.res-out-logo{height:28px;}
+.res-out-org-name{font-size:11px;font-weight:700;color:var(--navy);text-align:right;}
+.res-out-org-sub{font-size:9px;color:#6b7280;text-align:right;}
+.res-out-main-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:3px;text-transform:uppercase;letter-spacing:.02em;}
+.res-out-period{font-size:11px;color:#6b7280;margin-bottom:18px;}
+.res-asamblea{margin-bottom:16px;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;page-break-inside:avoid;}
+.res-asamblea-hdr{background:var(--navy);color:#fff;font-size:12px;font-weight:700;padding:9px 14px;display:flex;align-items:center;gap:8px;}
+.res-asamblea-num{background:var(--red);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;}
+.res-asamblea-body{display:grid;grid-template-columns:1fr 1fr;}
+@media(max-width:600px){.res-asamblea-body{grid-template-columns:1fr;}}
+.res-section{padding:10px 12px;}
+.res-section.logros-sec{border-right:1px solid #e5e7eb;}
+.res-section-title{font-size:9px;font-weight:700;letter-spacing:.07em;margin-bottom:6px;text-transform:uppercase;padding:2px 7px;border-radius:3px;display:inline-block;}
+.res-section-title.logros-lbl{color:#15803d;background:#dcfce7;}
+.res-section-title.mejoras-lbl{color:#b45309;background:#fef3c7;}
+.res-item{font-size:10px;color:var(--dark);padding:2px 0 2px 16px;position:relative;line-height:1.5;}
+.res-item::before{position:absolute;left:1px;font-weight:700;}
+.res-logro::before{content:'✓';color:#15803d;}
+.res-mejora::before{content:'▸';color:#b45309;}
+.res-global{margin-top:16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px 14px;}
+.res-global-title{font-size:10px;font-weight:700;color:#0369a1;margin-bottom:8px;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.05em;}
+.res-global-item{font-size:10px;color:var(--dark);padding:2px 0 2px 14px;position:relative;line-height:1.5;}
+.res-global-item::before{content:'→';position:absolute;left:0;color:#0369a1;font-weight:700;}
+/* PRINT */
+@media print{
+  #api-toggle-bar,#apibar,#app-nav,#input-panel,#btn-close-preview,.res-input-panel,.res-preview-header{display:none!important;}
+  #body{display:block!important;}
+  #body.has-preview{display:block!important;}
+  #preview-panel{display:block!important;padding:0;border:none;overflow:visible;}
+  #app{box-shadow:none;margin:0;border-radius:0;}
+  #tab-resumen{display:block!important;}
+  .res-main{display:block!important;}
+  #res-preview-panel{display:block!important;max-height:none;padding:0;}
+  #res-preview-content{border:none;padding:0;}
+}
 </style>
 </head>
 <body>
@@ -77,64 +248,198 @@ input,textarea,button{font-family:'Montserrat',system-ui,sans-serif;}
     <img class="hdr-logo" src="data:image/jpeg;base64,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" alt="Cruz Roja">
     <div>
       <div class="hdr-title">Generador de Actas &middot; Cruz Roja Madrid</div>
-      <div class="hdr-sub">Powered by Claude Haiku &middot; Formato Premium &middot; Montserrat &middot; Texto justificado</div>
+      <div class="hdr-sub">Responsable Territorial de Gesti&oacute;n T&eacute;cnica</div>
     </div>
+  </div>
+  <div id="api-toggle-bar">
+    <button id="btn-api-toggle" onclick="toggleApiBar()">&#9881;&#65039; Configuraci&oacute;n API</button>
   </div>
   <div id="apibar">
     <label>&#128273; API Key Anthropic:</label>
     <input type="password" id="apikey" placeholder="sk-ant-api03-..." autocomplete="off">
-    <span class="key-hint">Obtén tu clave en <a href="https://console.anthropic.com" target="_blank" style="color:#7ea8cc;">console.anthropic.com</a> &rarr; API Keys</span>
+    <button id="btn-key-toggle" onclick="toggleKeyEnabled()"></button>
+    <span class="key-hint">Obt&eacute;n tu clave en <a href="https://console.anthropic.com" target="_blank" style="color:#7ea8cc;">console.anthropic.com</a> &rarr; API Keys</span>
   </div>
+  <div id="app-nav">
+    <button class="app-nav-tab active" onclick="switchAppTab('actas',this)">&#128203; Generador de Actas</button>
+    <button class="app-nav-tab" onclick="switchAppTab('resumen',this)">&#128202; Resumen de Reuniones</button>
+  </div>
+  <div id="tab-actas">
   <div id="body">
     <div id="input-panel">
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('text',this)">&#128221; Texto</button>
-        <button class="tab" onclick="switchTab('docx',this)">&#128196; Word</button>
-        <button class="tab" onclick="switchTab('images',this)">&#128247; Im&aacute;genes</button>
-      </div>
-      <div id="pane-text">
-        <textarea id="txt" placeholder="Pega aqui la transcripcion de la reunion...&#10;&#10;Cuanto mas detallada, mejor quedara el acta."></textarea>
-      </div>
-      <div id="pane-docx" style="display:none">
-        <div class="upload-zone" onclick="document.getElementById('f-docx').click()">
-          <span class="zone-icon">&#128196;</span>
-          <span class="zone-lbl">Haz clic para subir un Word (.docx)</span>
-          <span class="zone-sub">El texto se extrae automaticamente</span>
-          <span id="docx-ok" class="ok-badge" style="display:none">&#10003; Cargado</span>
+      <!-- DATOS DE LA REUNIÓN -->
+      <div class="section-wrap">
+        <div class="section-hdr open" onclick="toggleSection(this)" id="hdr-datos">
+          <span>&#128197; Datos de la Reuni&oacute;n</span>
+          <span class="section-arrow">&#9658;</span>
         </div>
-        <input id="f-docx" type="file" accept=".docx" style="display:none" onchange="loadDocx(this)">
-      </div>
-      <div id="pane-images" style="display:none">
-        <div class="upload-zone" onclick="document.getElementById('f-imgs').click()">
-          <span class="zone-icon">&#128247;</span>
-          <span class="zone-lbl">Sube fotos de tus notas o cuadernos</span>
-          <span class="zone-sub">JPG / PNG, m&uacute;ltiples im&aacute;genes</span>
+        <div class="section-body open" id="body-datos">
+          <div class="form-grid">
+            <div class="field-wrap full">
+              <label class="field-label">Denominaci&oacute;n / T&iacute;tulo</label>
+              <input type="text" id="f-denom" class="field-inp" placeholder="Nombre de la reuni&oacute;n...">
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Fecha</label>
+              <input type="date" id="f-fecha" class="field-inp">
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Modalidad</label>
+              <select id="f-modalidad" class="field-inp">
+                <option>Presencial</option>
+                <option>Videoconferencia</option>
+                <option>H&iacute;brida</option>
+              </select>
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Hora inicio</label>
+              <input type="time" id="f-hinicio" class="field-inp">
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Hora fin</label>
+              <input type="time" id="f-hfin" class="field-inp">
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Presidida por</label>
+              <input type="text" id="f-presidida" class="field-inp" placeholder="Nombre y cargo...">
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Redactado por</label>
+              <input type="text" id="f-redactado" class="field-inp" value="David Martin Requena &#8211; RT Gesti&oacute;n T&eacute;cnica">
+            </div>
+          </div>
         </div>
-        <input id="f-imgs" type="file" accept="image/*" multiple style="display:none" onchange="loadImgs(this)">
-        <div id="img-thumbs"></div>
+      </div>
+      <!-- PARTICIPANTES -->
+      <div class="section-wrap">
+        <div class="section-hdr" onclick="toggleSection(this)" id="hdr-parti">
+          <span>&#128101; Participantes</span>
+          <span class="section-arrow">&#9658;</span>
+        </div>
+        <div class="section-body" id="body-parti">
+          <div id="contacts-area">
+            <div class="contacts-label">Contactos guardados (clic para a&ntilde;adir):</div>
+            <div id="contacts-chips"></div>
+          </div>
+          <div id="parti-list"></div>
+          <button class="btn-add-parti" onclick="addParticipant()">+ A&ntilde;adir participante</button>
+        </div>
+      </div>
+      <!-- CONTENIDO -->
+      <div class="section-wrap">
+        <div class="section-hdr open" onclick="toggleSection(this)" id="hdr-cont">
+          <span>&#128221; Contenido</span>
+          <span class="section-arrow">&#9658;</span>
+        </div>
+        <div class="section-body open" id="body-cont">
+          <div class="tabs">
+            <button class="tab active" onclick="switchTab('text',this)">&#128221; Texto</button>
+            <button class="tab" onclick="switchTab('docx',this)">&#128196; Word</button>
+            <button class="tab" onclick="switchTab('images',this)">&#128247; Im&aacute;genes</button>
+          </div>
+          <div id="pane-text">
+            <textarea id="txt" placeholder="Pega aqui la transcripcion de la reunion...&#10;&#10;Cuanto mas detallada, mejor quedara el acta."></textarea>
+          </div>
+          <div id="pane-docx" style="display:none">
+            <div class="upload-zone" id="docx-zone" onclick="document.getElementById('f-docx').click()"
+              ondragover="zoneDragOver(event,this)" ondragleave="zoneDragLeave(this)" ondrop="zoneDrop(event,'docx',this)">
+              <span class="zone-icon">&#128196;</span>
+              <span class="zone-lbl">Arrastra o haz clic para subir un Word (.doc / .docx)</span>
+              <span class="zone-sub">El texto se extrae autom&aacute;ticamente</span>
+              <span id="docx-ok" class="ok-badge" style="display:none">&#10003; Cargado</span>
+            </div>
+            <input id="f-docx" type="file" accept=".doc,.docx" style="display:none" onchange="loadDocx(this)">
+          </div>
+          <div id="pane-images" style="display:none">
+            <div class="upload-zone" id="imgs-zone" onclick="document.getElementById('f-imgs').click()"
+              ondragover="zoneDragOver(event,this)" ondragleave="zoneDragLeave(this)" ondrop="zoneDrop(event,'imgs',this)">
+              <span class="zone-icon">&#128247;</span>
+              <span class="zone-lbl">Arrastra o haz clic para subir fotos</span>
+              <span class="zone-sub">JPG / PNG, m&uacute;ltiples im&aacute;genes</span>
+            </div>
+            <input id="f-imgs" type="file" accept="image/*" multiple style="display:none" onchange="loadImgs(this)">
+            <div id="img-thumbs"></div>
+          </div>
+        </div>
       </div>
       <div id="err"></div>
       <div id="succ"></div>
       <div class="btn-row">
         <button id="btn-gen" onclick="generate()">&#10024; Generar Acta</button>
         <button id="btn-dl" onclick="downloadDoc()">&#11015; Descargar .doc</button>
+        <button id="btn-pdf" onclick="exportPdf()">&#128462; Exportar PDF</button>
+      </div>
+      <div id="email-area">
+        <div class="email-label">&#128231; Enviar acta por email</div>
+        <div class="email-btns">
+          <button id="btn-email" onclick="sendEmail()">&#128231; Enviar por email</button>
+          <button id="btn-copy-email" onclick="copyEmail()">&#128203; Copiar email</button>
+        </div>
       </div>
     </div>
     <div id="preview-panel">
+      <button id="btn-close-preview" onclick="closePreview()" title="Cerrar vista previa">&#10005;</button>
       <div class="pvl">VISTA PREVIA</div>
       <div id="pc"></div>
     </div>
+  </div><!-- /#body -->
+  </div><!-- /#tab-actas -->
+  <div id="tab-resumen" style="display:none">
+    <div class="res-main">
+      <!-- LEFT: INPUT PANEL -->
+      <div class="res-input-panel">
+        <div class="res-meta-bar">
+          <div class="res-meta-full">
+            <label class="res-meta-lbl">T&iacute;tulo del informe</label>
+            <input class="res-meta-inp" type="text" id="res-titulo" placeholder="Resumen de Reuniones &ndash; Asambleas Locales">
+          </div>
+          <div>
+            <label class="res-meta-lbl">Per&iacute;odo</label>
+            <input class="res-meta-inp" type="text" id="res-periodo" placeholder="Ej: Febrero 2026">
+          </div>
+          <div>
+            <label class="res-meta-lbl">Responsable</label>
+            <input class="res-meta-inp" type="text" id="res-responsable" value="David Martin Requena &ndash; RT Gesti&oacute;n T&eacute;cnica">
+          </div>
+        </div>
+        <div class="res-bulk-zone" id="res-bulk-zone"
+          onclick="document.getElementById('res-bulk-file').click()"
+          ondragover="resBulkDragOver(event)" ondragleave="resBulkDragLeave()" ondrop="resBulkDrop(event)">
+          <span class="res-bulk-icon">&#128451;</span>
+          <span class="res-bulk-lbl">Arrastra aqu&iacute; todas las actas o haz clic para seleccionar</span>
+          <span class="res-bulk-sub">.docx · .doc · .pdf &mdash; varios archivos a la vez (m&aacute;x. 22)</span>
+          <span id="res-bulk-count" class="res-bulk-badge" style="display:none"></span>
+        </div>
+        <input id="res-bulk-file" type="file" accept=".doc,.docx,.pdf" multiple style="display:none" onchange="resBulkFileChange(this)">
+        <div class="res-transcript-list" id="res-transcript-list"></div>
+        <button id="btn-add-transcript" onclick="addTranscript()">+ A&ntilde;adir Asamblea manualmente</button>
+        <button id="btn-gen-resumen" onclick="generateResumen()">&#10024; Generar Resumen</button>
+        <div id="resumen-err"></div>
+      </div>
+      <!-- RIGHT: PREVIEW PANEL -->
+      <div id="res-preview-panel" style="display:none">
+        <div class="res-preview-header">
+          <span class="res-preview-label">VISTA PREVIA</span>
+          <div class="res-dl-row">
+            <button class="res-dl-btn docx" onclick="downloadResumenDoc()">&#11015; Descargar .docx</button>
+            <button class="res-dl-btn pdf" id="btn-res-pdf" onclick="exportResumenPdf()">&#128462; PDF</button>
+            <button class="res-dl-btn email" onclick="sendResumenEmail()">&#128231; Email</button>
+          </div>
+        </div>
+        <div id="res-preview-content"></div>
+      </div>
+    </div>
   </div>
-</div>
+</div><!-- /#app -->
 <script>
 const NAVY="#011e41",RED="#f5333f",GREY="#ededed",DARK="#323232",BRD="#58595b";
 const LOGO="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";
-const SYS=`Eres un experto redactor de actas institucionales para Cruz Roja Madrid.
+const SYS=`Eres un experto redactor de actas institucionales para Cruz Roja Madrid. Redactas actas impolutas, formales y de alta calidad.
 REGLAS: Devuelve SOLO JSON valido. Sin backticks, sin texto adicional.
 "redactado_por" es SIEMPRE: "David Martin Requena - RT Gestion Tecnica"
 "denominacion" en MAYUSCULAS. "asunto": MAYUSCULAS, SIN numeracion, max 8 palabras.
-"observaciones": redaccion formal impersonal (Se presento, Se acordo, Se informo...).
-Primera mencion: nombre completo + siglas entre parentesis. Siguientes: solo siglas.
+"observaciones": redaccion formal, sintetizada y concisa. Atribuye cada intervencion usando SOLO las iniciales del nombre completo del interlocutor (ej: Juan Garcia Lopez → JGL). Emplea verbos precisos: indico, informo, expuso, manifesto, senalo, propuso, solicito. Para acuerdos colectivos usa voz pasiva: "Se acordo...", "Se aprobo...", "Se informo...". Cada parrafo debe ser breve (2-3 lineas maximo); sintetiza al maximo la informacion mas relevante. Separa SIEMPRE cada parrafo con | para generar espacio entre ellos.
+Primera mencion de organismo o grupo: nombre completo + siglas entre parentesis. Siguientes: solo siglas.
 Campos ausentes: null o []. Multiples subtemas en observaciones: separar con |
 JSON: {"denominacion":"NOMBRE","fecha":"DD/MM/YYYY","hora_inicio":"HH:MM","hora_fin":"HH:MM","modalidad":"Videoconferencia / Presencial","presidida_por":"Nombre - Cargo","redactado_por":"David Martin Requena - RT Gestion Tecnica","asistentes":[{"nombre":"...","cargo":"..."}],"excusan":[{"nombre":"...","cargo":"..."}],"agenda":["Tema 1"],"contenido":[{"asunto":"TITULO MAYUSCULAS","observaciones":"Texto..."}]}`;
 
@@ -144,6 +449,89 @@ const saved=localStorage.getItem('cre_ant_key');
 if(saved)keyEl.value=saved;
 keyEl.addEventListener('input',()=>localStorage.setItem('cre_ant_key',keyEl.value.trim()));
 
+let keyEnabled=localStorage.getItem('cre_ant_key_enabled')!=='0';
+function updateKeyToggle(){
+  const btn=document.getElementById('btn-key-toggle');
+  if(keyEnabled){
+    btn.textContent='🟢 Clave activa';
+    btn.className='enabled';
+    keyEl.classList.remove('key-disabled');
+  }else{
+    btn.textContent='🔴 Clave desactivada';
+    btn.className='disabled';
+    keyEl.classList.add('key-disabled');
+  }
+}
+function toggleKeyEnabled(){
+  keyEnabled=!keyEnabled;
+  localStorage.setItem('cre_ant_key_enabled',keyEnabled?'1':'0');
+  updateKeyToggle();
+}
+updateKeyToggle();
+
+// Set today as default date
+(function(){
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('f-fecha').value=today;
+})();
+
+// API toggle
+function toggleApiBar(){
+  const bar=document.getElementById('apibar');
+  bar.classList.toggle('visible');
+}
+
+// Section collapse
+function toggleSection(hdr){
+  hdr.classList.toggle('open');
+  const body=hdr.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+// Participants
+let contacts=JSON.parse(localStorage.getItem('cre_contacts')||'[]');
+function renderContacts(){
+  const chips=document.getElementById('contacts-chips');
+  chips.innerHTML=contacts.map((c,i)=>
+    `<button class="chip" onclick="addContactAsParticipant(${i})" title="A\u00f1adir a la lista">${e(c.nombre)}<button class="chip-del" onclick="event.stopPropagation();deleteContact(${i})" title="Eliminar contacto">\u00d7</button></button>`
+  ).join('');
+}
+function deleteContact(i){
+  contacts.splice(i,1);
+  localStorage.setItem('cre_contacts',JSON.stringify(contacts));
+  renderContacts();
+}
+function addContactAsParticipant(i){
+  const c=contacts[i];
+  addParticipant(c.nombre,c.cargo,true);
+}
+function addParticipant(nombre,cargo,asiste){
+  const list=document.getElementById('parti-list');
+  const row=document.createElement('div');
+  row.className='parti-row';
+  row.innerHTML=`<input type="text" placeholder="Nombre" value="${e(nombre||'')}"><input type="text" placeholder="Cargo" value="${e(cargo||'')}"><input type="checkbox" class="parti-check" ${asiste?'checked':''} title="Asiste"><button class="btn-del-parti" onclick="this.parentElement.remove();saveForm()">\u00d7</button>`;
+  list.appendChild(row);
+  saveForm();
+}
+function getParticipants(){
+  return Array.from(document.querySelectorAll('#parti-list .parti-row')).map(row=>{
+    const inputs=row.querySelectorAll('input[type=text]');
+    const check=row.querySelector('input[type=checkbox]');
+    return{nombre:inputs[0].value.trim(),cargo:inputs[1].value.trim(),asiste:check.checked};
+  }).filter(p=>p.nombre);
+}
+function saveContacts(){
+  const parts=getParticipants().filter(p=>p.nombre);
+  parts.forEach(p=>{
+    if(!contacts.find(c=>c.nombre===p.nombre)){
+      contacts.push({nombre:p.nombre,cargo:p.cargo});
+    }
+  });
+  localStorage.setItem('cre_contacts',JSON.stringify(contacts));
+  renderContacts();
+}
+
+// Tabs
 function switchTab(t,btn){
   tab=t;
   ['text','docx','images'].forEach((id,i)=>{
@@ -161,7 +549,7 @@ async function loadDocx(inp){
     document.getElementById('txt').value=r.value;
     document.getElementById('docx-ok').style.display='inline-block';
     switchTab('text',document.querySelectorAll('.tab')[0]);
-  }catch(e){showErr('Error leyendo Word: '+e.message);}
+  }catch(err){showErr('Error leyendo Word: '+err.message);}
 }
 
 function loadImgs(inp){
@@ -184,24 +572,99 @@ function loadImgs(inp){
   });
 }
 
+// Drag-drop helpers for Generar Actas upload zones
+function zoneDragOver(ev,zone){ev.preventDefault();ev.stopPropagation();zone.classList.add('drag-over');}
+function zoneDragLeave(zone){zone.classList.remove('drag-over');}
+function zoneDrop(ev,type,zone){
+  ev.preventDefault();ev.stopPropagation();
+  zone.classList.remove('drag-over');
+  const files=ev.dataTransfer.files;
+  if(!files.length)return;
+  if(type==='docx'){
+    // Create synthetic event for loadDocx
+    const dt=new DataTransfer();dt.items.add(files[0]);
+    const inp=document.getElementById('f-docx');inp.files=dt.files;
+    loadDocx(inp);
+  }else if(type==='imgs'){
+    const inp=document.getElementById('f-imgs');
+    try{const dt=new DataTransfer();Array.from(files).forEach(f=>{if(f.type.startsWith('image/'))dt.items.add(f);});inp.files=dt.files;loadImgs(inp);}
+    catch(_){loadImgsFromFiles(Array.from(files).filter(f=>f.type.startsWith('image/')));}
+  }
+}
+function loadImgsFromFiles(fileList){
+  imgs=[];
+  const thumbs=document.getElementById('img-thumbs');
+  thumbs.innerHTML='';
+  Promise.all(fileList.map(f=>new Promise(res=>{
+    const r=new FileReader();
+    r.onload=()=>{imgs.push({data:r.result.split(',')[1],type:f.type,url:r.result});
+      const img=document.createElement('img');img.src=r.result;img.className='thumb';thumbs.appendChild(img);res();};
+    r.readAsDataURL(f);
+  }))).then(()=>{
+    const s=document.createElement('span');s.style.cssText='font-size:12px;color:#15803d;align-self:center;';
+    s.textContent=imgs.length+' imagen'+(imgs.length>1?'es':'')+' lista'+(imgs.length>1?'s':'');thumbs.appendChild(s);
+  });
+}
+
+// Get form data
+function getFormData(){
+  return{
+    denominacion:document.getElementById('f-denom').value.trim(),
+    fecha:formatDate(document.getElementById('f-fecha').value),
+    hora_inicio:document.getElementById('f-hinicio').value,
+    hora_fin:document.getElementById('f-hfin').value,
+    modalidad:document.getElementById('f-modalidad').value,
+    presidida_por:document.getElementById('f-presidida').value.trim(),
+    redactado_por:document.getElementById('f-redactado').value.trim()||'David Martin Requena - RT Gestion Tecnica'
+  };
+}
+function formatDate(iso){
+  if(!iso)return'';
+  const[y,m,d]=iso.split('-');
+  return d+'/'+m+'/'+y;
+}
+
 async function generate(){
-  const key=keyEl.value.trim();
-  if(!key){showErr('Introduce tu API Key de Anthropic (sk-ant-api03-...)');return;}
+  clearMsg();
+  const key=keyEnabled?keyEl.value.trim():'';
   const txt=document.getElementById('txt').value.trim();
   const hasText=tab!=='images'&&txt;
   const hasImgs=tab==='images'&&imgs.length>0;
-  if(!hasText&&!hasImgs){showErr('Introduce una transcripcion o sube imagenes.');return;}
-  clearMsg();
   const btn=document.getElementById('btn-gen');
+  const fd=getFormData();
+
+  if(!key){
+    // Local mode - parse text without AI
+    if(!hasText){showErr('Introduce una transcripcion o configura tu API Key.');return;}
+    acta=localParse(txt,fd);
+    renderPreview(acta);
+    document.getElementById('btn-dl').style.display='block';
+    document.getElementById('btn-pdf').style.display='block';
+    document.getElementById('email-area').style.display='block';
+    saveContacts();
+    showSucc('Vista previa generada (modo local, sin IA). Revisa y edita seg\u00fan necesites.');
+    return;
+  }
+  if(!hasText&&!hasImgs){showErr('Introduce una transcripcion o sube im\u00e1genes.');return;}
+
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generando acta...';
-  acta=null;document.getElementById('btn-dl').style.display='none';
+  acta=null;
+  document.getElementById('btn-dl').style.display='none';
+  document.getElementById('btn-pdf').style.display='none';
+  document.getElementById('email-area').style.display='none';
+
+  const parts=getParticipants();
+  const asi=parts.filter(p=>p.asiste).map(p=>p.nombre+(p.cargo?' - '+p.cargo:'')).join(', ');
+  const exc=parts.filter(p=>!p.asiste).map(p=>p.nombre).join(', ');
+  const meta='Datos de la reunion: Denominacion='+fd.denominacion+', Fecha='+fd.fecha+', Hora inicio='+fd.hora_inicio+', Hora fin='+fd.hora_fin+', Modalidad='+fd.modalidad+', Presidida por='+fd.presidida_por+', Redactado por='+fd.redactado_por+(asi?', Asistentes='+asi:'')+(exc?', Excusan='+exc:'')+'. ';
+
   try{
     let content=[];
     if(tab==='images'){
       imgs.forEach(i=>content.push({type:'image',source:{type:'base64',media_type:i.type,data:i.data}}));
-      content.push({type:'text',text:'Transcribe y estructura el acta. SOLO JSON valido, sin backticks.'});
+      content.push({type:'text',text:meta+'Transcribe las imagenes, identifica quien dice cada cosa y redacta un acta de alta calidad. SOLO JSON valido, sin backticks.'});
     }else{
-      content.push({type:'text',text:'Estructura esta transcripcion como acta de Cruz Roja Madrid. SOLO JSON valido sin backticks:\n\n'+txt});
+      content.push({type:'text',text:meta+'Analiza la transcripcion, identifica quien dice cada cosa y redacta un acta de alta calidad. SOLO JSON valido sin backticks:\n\n'+txt});
     }
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
@@ -211,25 +674,164 @@ async function generate(){
         'anthropic-version':'2023-06-01',
         'anthropic-dangerous-direct-browser-access':'true'
       },
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:3000,system:SYS,messages:[{role:'user',content}]})
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:4096,system:SYS,messages:[{role:'user',content}]})
     });
     if(!resp.ok){
       const er=await resp.json().catch(()=>({}));
       throw new Error(er.error?.message||'Error HTTP '+resp.status);
     }
     const data=await resp.json();
-    const raw=(data.content?.find(c=>c.type==='text')?.text||'{}').replace(/```json|```/g,'').trim();
+    const raw=(data.content?.find(c=>c.type==='text')?.text||'[]').replace(/```json|```/g,'').trim();
     acta=JSON.parse(raw);
+    // Merge form data into acta
+    if(fd.denominacion)acta.denominacion=fd.denominacion.toUpperCase();
+    if(fd.fecha)acta.fecha=fd.fecha;
+    if(fd.hora_inicio)acta.hora_inicio=fd.hora_inicio;
+    if(fd.hora_fin)acta.hora_fin=fd.hora_fin;
+    if(fd.modalidad)acta.modalidad=fd.modalidad;
+    if(fd.presidida_por)acta.presidida_por=fd.presidida_por;
+    acta.redactado_por=fd.redactado_por||'David Martin Requena - RT Gestion Tecnica';
+    if(parts.length>0){
+      acta.asistentes=parts.filter(p=>p.asiste).map(p=>({nombre:p.nombre,cargo:p.cargo}));
+      acta.excusan=parts.filter(p=>!p.asiste).map(p=>({nombre:p.nombre,cargo:p.cargo}));
+    }
     renderPreview(acta);
     document.getElementById('btn-dl').style.display='block';
+    document.getElementById('btn-pdf').style.display='block';
+    document.getElementById('email-area').style.display='block';
+    saveContacts();
     showSucc('Acta generada. Pulsa Descargar .doc para abrirla en Word con el formato Cruz Roja.');
-  }catch(e){
-    let m=e.message;
+  }catch(err){
+    let m=err.message;
     if(m.includes('401')||m.includes('authentication'))m='API Key incorrecta. Comprueba que la has copiado completa desde console.anthropic.com';
-    else if(m.includes('credit')||m.includes('billing'))m='Credito agotado. Recarga en console.anthropic.com -> Billing';
+    else if(m.includes('credit')||m.includes('billing'))m='Cr\u00e9dito agotado. Recarga en console.anthropic.com -> Billing';
+    else if(m.includes('Unterminated')||m.includes('JSON'))m='La respuesta de la IA fue cortada (acta demasiado larga). Intenta con un texto m\u00e1s corto o divide el contenido en partes.';
     showErr(m);
   }
   btn.disabled=false;btn.innerHTML='&#10024; Generar Acta';
+}
+
+// Local parse (no AI)
+function localParse(txt,fd){
+  const parts=getParticipants();
+  const lines=txt.split('\n');
+  const agenda=[];
+  const contenido=[];
+  let currentTopic=null;
+  let currentObs=[];
+  lines.forEach(line=>{
+    const trimmed=line.trim();
+    if(!trimmed)return;
+    if(/^#+\s+/.test(trimmed)){
+      if(currentTopic!==null){contenido.push({asunto:currentTopic,observaciones:currentObs.join(' | ')});}
+      currentTopic=trimmed.replace(/^#+\s+/,'').toUpperCase();
+      currentObs=[];
+      agenda.push(trimmed.replace(/^#+\s+/,''));
+    }else if(currentTopic!==null){
+      currentObs.push(trimmed);
+    }
+  });
+  if(currentTopic!==null)contenido.push({asunto:currentTopic,observaciones:currentObs.join(' | ')});
+  if(contenido.length===0){contenido.push({asunto:'CONTENIDO',observaciones:txt.replace(/\n+/g,' | ')});}
+  if(agenda.length===0&&contenido.length>0)agenda.push(...contenido.map(c=>c.asunto));
+  return{
+    denominacion:(fd.denominacion||'REUNION').toUpperCase(),
+    fecha:fd.fecha,
+    hora_inicio:fd.hora_inicio,
+    hora_fin:fd.hora_fin,
+    modalidad:fd.modalidad,
+    presidida_por:fd.presidida_por,
+    redactado_por:fd.redactado_por,
+    asistentes:parts.filter(p=>p.asiste).map(p=>({nombre:p.nombre,cargo:p.cargo})),
+    excusan:parts.filter(p=>!p.asiste).map(p=>({nombre:p.nombre,cargo:p.cargo})),
+    agenda,
+    contenido
+  };
+}
+
+// Close preview
+function closePreview(){
+  document.getElementById('body').classList.remove('has-preview');
+  document.getElementById('preview-panel').style.display='none';
+}
+
+// PDF export
+async function exportPdf(){
+  const previewEl=document.getElementById('pc');
+  if(!previewEl||!previewEl.innerHTML.trim()){window.print();return;}
+  const btn=document.getElementById('btn-pdf');
+  const origText=btn.innerHTML;
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generando PDF...';
+  try{
+    // Render at a fixed A4-proportional width so the PDF always looks consistent
+    const wrap=document.createElement('div');
+    wrap.style.cssText='position:fixed;left:-9999px;top:0;width:700px;background:#fff;overflow:visible;';
+    const clone=previewEl.cloneNode(true);
+    clone.style.width='700px';
+    wrap.appendChild(clone);
+    document.body.appendChild(wrap);
+    await new Promise(r=>setTimeout(r,80));
+    const canvas=await html2canvas(clone,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false});
+    document.body.removeChild(wrap);
+    const imgData=canvas.toDataURL('image/png');
+    const jsPDFLib=window.jspdf||window.jsPDF;
+    const {jsPDF}=jsPDFLib||{};
+    if(!jsPDF){window.print();return;}
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const pageW=pdf.internal.pageSize.getWidth();
+    const pageH=pdf.internal.pageSize.getHeight();
+    const margin=20;
+    const maxW=pageW-margin*2;
+    const ratio=canvas.width/maxW;
+    const fullImgH=canvas.height/ratio;
+    const maxImgHPerPage=pageH-margin*2;
+    if(fullImgH<=maxImgHPerPage){
+      pdf.addImage(imgData,'PNG',margin,margin,maxW,fullImgH);
+    }else{
+      const rowPx=Math.floor(maxImgHPerPage*ratio);
+      let srcY=0;
+      while(srcY<canvas.height){
+        const sliceH=Math.min(rowPx,canvas.height-srcY);
+        const tmp=document.createElement('canvas');
+        tmp.width=canvas.width;tmp.height=sliceH;
+        tmp.getContext('2d').drawImage(canvas,0,srcY,canvas.width,sliceH,0,0,canvas.width,sliceH);
+        const sliceImg=tmp.toDataURL('image/png');
+        const sliceMmH=sliceH/ratio;
+        pdf.addImage(sliceImg,'PNG',margin,margin,maxW,sliceMmH);
+        srcY+=sliceH;
+        if(srcY<canvas.height)pdf.addPage();
+      }
+    }
+    const den=(acta?.denominacion||'acta').replace(/[^a-zA-Z\u00C0-\u024F0-9]/g,'_').replace(/_+/g,'_').slice(0,35);
+    pdf.save('Acta_'+den+'_'+(acta?.fecha||'').replace(/\//g,'-')+'.pdf');
+  }catch(err){
+    window.print();
+  }
+  btn.disabled=false;btn.innerHTML=origText;
+}
+
+// Email
+function buildEmailBody(){
+  if(!acta)return{subject:'',body:''};
+  const hora=new Date().getHours();
+  const saludo=hora<14?'Buenos d\u00edas':'Buenas tardes';
+  const nombre=acta.denominacion||'la reuni\u00f3n';
+  const fecha=acta.fecha||'';
+  const body=saludo+',\n\nAdjunto el acta de la '+nombre+', celebrada el '+fecha+'.\n\nQuedo a vuestra disposici\u00f3n para cualquier duda o aclaraci\u00f3n.\n\nUn saludo';
+  const subject='Acta - '+nombre+' - '+fecha;
+  return{subject,body};
+}
+function sendEmail(){
+  const{subject,body}=buildEmailBody();
+  const url='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  window.location.href=url;
+}
+function copyEmail(){
+  const{subject,body}=buildEmailBody();
+  const full='Asunto: '+subject+'\n\n'+body;
+  navigator.clipboard.writeText(full).then(()=>showSucc('Email copiado al portapapeles')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showSucc('Email copiado al portapapeles');
+  });
 }
 
 function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -239,20 +841,21 @@ function renderPreview(a){
   document.getElementById('preview-panel').style.display='block';
   const meta=[
     ['Denominacion','<b>'+e((a.denominacion||'').toUpperCase())+'</b>',false],
-    ['Fecha y Horario','Fecha: '+e(a.fecha||'')+' · '+e(a.hora_inicio||'')+(a.hora_fin?' – '+e(a.hora_fin):'')+' h',true],
+    ['Fecha y Horario','Fecha: '+e(a.fecha||'')+' &middot; '+e(a.hora_inicio||'')+(a.hora_fin?' &ndash; '+e(a.hora_fin):'')+' h',true],
     ['Modalidad',e(a.modalidad||''),false],
     ['Presidida por',e(a.presidida_por||''),true],
     ['Redactado por',e(a.redactado_por||''),false],
   ].map(([l,v,alt])=>'<tr><td class="tl">'+l+'</td><td class="tv'+(alt?' alt':'')+'">'+v+'</td></tr>').join('');
-  const asi=(a.asistentes||[]).map(x=>e(x.nombre+(x.cargo?' – '+x.cargo:''))).join(' · ');
-  const exc=(a.excusan||[]).map(x=>e(x.nombre)).join(', ');
-  const aRow='<tr><td class="tl">Asistentes<br><small style="font-weight:400;font-size:9px;">Excusan</small></td><td class="tv">'+asi+(exc?'<div style="font-size:9px;color:#666;margin-top:2px"><em>Excusan: </em>'+exc+'</div>':'')+'</td></tr>';
+  const asiList=(a.asistentes||[]).map(x=>'<div style="padding:1px 0;">'+e(x.nombre)+(x.cargo?'&nbsp;&ndash;&nbsp;<span style="color:#555;">'+e(x.cargo)+'</span>':'')+'</div>').join('');
+  const excList=(a.excusan||[]).map(x=>'<div style="padding:1px 0;color:#555;">'+e(x.nombre)+(x.cargo?'&nbsp;&ndash;&nbsp;'+e(x.cargo):'')+'</div>').join('');
+  const aRow='<tr><td class="tl">Asistentes</td><td class="tv">'+(asiList||'&mdash;')+'</td></tr>'+
+    (excList?'<tr><td class="tl" style="font-weight:400;font-size:9px;">Excusan asistencia</td><td class="tv alt">'+excList+'</td></tr>':'');
   const ag=(a.agenda||[]).map((x,i)=>'<div class="agi">'+(i+1)+'. '+e(x)+'</div>').join('');
   const rows=(a.contenido||[]).map((row,i)=>'<tr><td class="ca">'+e((row.asunto||'').toUpperCase())+'</td><td class="co'+(i%2?' alt':'')+'">'+e(row.observaciones||'').split('|').map(l=>'<p>'+l.trim()+'</p>').join('')+'</td></tr>').join('');
   document.getElementById('pc').innerHTML=
     '<div class="logo-bar"><img class="pv-logo" src="data:image/jpeg;base64,'+LOGO+'" alt="CRE"><span style="font-size:10px;color:#6b7280;">'+e(a.fecha||'')+'</span></div>'+
     '<table>'+meta+aRow+'</table>'+
-    '<div class="agt">Orden del dia – Temas tratados</div>'+ag+
+    '<div class="agt">Orden del dia &ndash; Temas tratados</div>'+ag+
     '<div style="margin:8px 0;"></div>'+
     '<table><tr><th class="ch" style="width:27%">ASUNTO</th><th class="ch">OBSERVACIONES</th></tr>'+rows+'</table>';
 }
@@ -261,29 +864,51 @@ function downloadDoc(){
   if(!acta)return;const a=acta;
   const lbl='font-family:Montserrat,Arial;font-size:9pt;color:#fff;font-weight:bold;';
   const val='font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;';
+  // Asistentes/excusan as plain paragraph lines (no inner table)
+  const pSty='font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';margin:1pt 0;';
+  const asiList=(a.asistentes||[]).map(x=>'<p style="'+pSty+'">'+e(x.nombre)+(x.cargo?' &ndash; <span style="color:#555;">'+e(x.cargo)+'</span>':'')+'</p>').join('');
+  const excList=(a.excusan||[]).map(x=>'<p style="'+pSty+'color:#555;">'+e(x.nombre)+(x.cargo?' &ndash; '+e(x.cargo):'')+'</p>').join('');
   const rows=(a.contenido||[]).map((item,i)=>{
     const bg=i%2===0?'#fff':GREY;
     const obs=e(item.observaciones||'').split('|').map(l=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:3pt 0 0 0;">'+l.trim()+'</p>').join('');
-    return '<tr><td style="width:128pt;border:1pt solid '+BRD+';background:#fff;padding:5pt;vertical-align:middle;"><p style="font-family:Montserrat,Arial;font-size:9pt;color:'+NAVY+';font-weight:bold;text-align:center;margin:0;">'+e((item.asunto||'').toUpperCase())+'</p></td><td style="width:354pt;border:1pt solid '+BRD+';background:'+bg+';padding:5pt;vertical-align:top;">'+obs+'</td></tr>';
+    return '<tr><td style="width:27%;border:1pt solid '+BRD+';background:#fff;padding:5pt;vertical-align:middle;"><p style="font-family:Montserrat,Arial;font-size:9pt;color:'+NAVY+';font-weight:bold;text-align:center;margin:0;">'+e((item.asunto||'').toUpperCase())+'</p></td><td style="border:1pt solid '+BRD+';background:'+bg+';padding:5pt;vertical-align:top;">'+obs+'</td></tr>';
   }).join('');
-  const ag=(a.agenda||[]).map((x,i)=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:1pt 0;">'+(i+1)+'.&nbsp;&nbsp;'+e(x)+'</p>').join('');
-  const asi=(a.asistentes||[]).map(x=>e(x.nombre)+(x.cargo?' &ndash; '+e(x.cargo):'')).join('<br/>');
-  const exc=(a.excusan||[]).map(x=>e(x.nombre)+(x.cargo?' &ndash; '+e(x.cargo):'')).join('<br/>');
-  const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>@page{size:21cm 29.7cm;margin:3.3cm 2.0cm 1.9cm 2.0cm;}body{font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';margin:0;}table{border-collapse:collapse;}p{margin:0;line-height:1.3;}</style></head><body>'+
-    '<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:6pt;border-bottom:1.5pt solid '+NAVY+';margin-bottom:10pt;"><img src="data:image/jpeg;base64,'+LOGO+'" style="height:26pt;" alt="Cruz Roja"/><span style="font-family:Montserrat,Arial;font-size:9pt;color:'+BRD+';">'+e(a.fecha||'')+'</span></div>'+
-    '<p style="margin:4pt 0;">&nbsp;</p>'+
-    '<table style="width:482pt;border-collapse:collapse;margin-bottom:12pt;">'+
-    '<tr><td style="width:128pt;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+lbl+'margin:0;">Denominaci&oacute;n</p></td><td colspan="2" style="width:354pt;border:1pt solid '+BRD+';padding:5pt;"><p style="'+val+'font-weight:bold;margin:0;">'+e((a.denominacion||'').toUpperCase())+'</p></td></tr>'+
-    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+lbl+'margin:0;">Fecha y Horario</p></td><td colspan="2" style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+val+'margin:0;">Fecha: '+e(a.fecha||'')+'&nbsp;&nbsp;'+e(a.hora_inicio||'')+(a.hora_fin?' a '+e(a.hora_fin):'')+' horas</p></td></tr>'+
-    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+lbl+'margin:0;">Modalidad</p></td><td colspan="2" style="border:1pt solid '+BRD+';padding:5pt;"><p style="'+val+'margin:0;">'+e(a.modalidad||'')+'</p></td></tr>'+
-    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+lbl+'margin:0;">Presidida por</p></td><td colspan="2" style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+val+'margin:0;">'+e(a.presidida_por||'')+'</p></td></tr>'+
-    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="'+lbl+'margin:0;">Redactado por</p></td><td colspan="2" style="border:1pt solid '+BRD+';padding:5pt;"><p style="'+val+'margin:0;">'+e(a.redactado_por||'')+'</p></td></tr>'+
-    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Asistentes</p><p style="'+lbl+'margin:2pt 0 0 0;">Excusan asistencia</p></td><td style="width:177pt;border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">'+(asi||'&mdash;')+'</p></td><td style="width:177pt;border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;color:#555;">'+(exc||'&mdash;')+'</p></td></tr>'+
-    '</table>'+
-    '<p style="font-family:Montserrat,Arial;font-size:14pt;color:'+NAVY+';font-weight:bold;margin:0 0 6pt 0;">Orden del d&iacute;a &ndash; Temas tratados</p>'+ag+
+  const ag=(a.agenda||[]).map((x,i)=>'<p style="font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';text-align:justify;margin:2pt 0;">'+(i+1)+'.&nbsp;&nbsp;'+e(x)+'</p>').join('');
+  // Header: table layout (Word does not support display:flex); logo sized to match preview (22px ≈ 16pt)
+  const hdr=
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:10pt;">'+
+    '<tr>'+
+    '<td style="padding-bottom:6pt;border-bottom:1.5pt solid '+NAVY+';vertical-align:middle;">'+
+    '<img src="data:image/jpeg;base64,'+LOGO+'" width="78" height="22" style="width:59pt;height:17pt;" alt="Cruz Roja"/>'+
+    '</td>'+
+    '<td style="padding-bottom:6pt;border-bottom:1.5pt solid '+NAVY+';vertical-align:middle;text-align:right;">'+
+    '<span style="font-family:Montserrat,Arial;font-size:9pt;color:'+BRD+';">'+e(a.fecha||'')+'</span>'+
+    '</td>'+
+    '</tr></table>';
+  // Meta rows: 2-column structure matching the preview (label | value)
+  const metaRows=
+    '<tr><td style="width:27%;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Denominaci&oacute;n</p></td>'+
+    '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'font-weight:bold;margin:0;">'+e((a.denominacion||'').toUpperCase())+'</p></td></tr>'+
+    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Fecha y Horario</p></td>'+
+    '<td style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">Fecha: '+e(a.fecha||'')+'&nbsp;&nbsp;'+e(a.hora_inicio||'')+(a.hora_fin?' a '+e(a.hora_fin):'')+' horas</p></td></tr>'+
+    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Modalidad</p></td>'+
+    '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">'+e(a.modalidad||'')+'</p></td></tr>'+
+    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Presidida por</p></td>'+
+    '<td style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">'+e(a.presidida_por||'')+'</p></td></tr>'+
+    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Redactado por</p></td>'+
+    '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+val+'margin:0;">'+e(a.redactado_por||'')+'</p></td></tr>'+
+    '<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'margin:0;">Asistentes</p></td>'+
+    '<td style="border:1pt solid '+BRD+';padding:5pt;vertical-align:top;">'+(asiList||'&mdash;')+'</td></tr>'+
+    (excList?'<tr><td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;"><p style="'+lbl+'font-weight:400;font-size:8pt;margin:0;">Excusan asistencia</p></td>'+
+    '<td style="background:'+GREY+';border:1pt solid '+BRD+';padding:5pt;vertical-align:top;">'+excList+'</td></tr>':'');
+  const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>@page{size:21cm 29.7cm;margin:2.5cm 2.0cm 2.0cm 2.0cm;}body{font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';margin:0;}table{border-collapse:collapse;width:100%;}p{margin:0;line-height:1.4;}</style></head><body>'+
+    hdr+
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:14pt;">'+metaRows+'</table>'+
+    '<p style="font-family:Montserrat,Arial;font-size:13pt;color:'+NAVY+';font-weight:bold;margin:0 0 6pt 0;">Orden del d&iacute;a &ndash; Temas tratados</p>'+ag+
     '<p style="margin:10pt 0;">&nbsp;</p>'+
-    '<table style="width:482pt;border-collapse:collapse;">'+
-    '<tr><td style="width:128pt;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">ASUNTO</p></td><td style="width:354pt;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">OBSERVACIONES</p></td></tr>'+rows+
+    '<table style="width:100%;border-collapse:collapse;">'+
+    '<tr><td style="width:27%;background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">ASUNTO</p></td>'+
+    '<td style="background:'+NAVY+';border:1pt solid '+BRD+';padding:5pt;"><p style="font-family:Montserrat,Arial;font-size:10pt;color:#fff;font-weight:bold;text-align:center;margin:0;">OBSERVACIONES</p></td></tr>'+rows+
     '</table></body></html>';
   const blob=new Blob(['\ufeff',doc],{type:'application/msword'});
   const url=URL.createObjectURL(blob);
@@ -292,9 +917,379 @@ function downloadDoc(){
   el.download='Acta_'+den+'_'+(a.fecha||'').replace(/\//g,'-')+'.doc';
   document.body.appendChild(el);el.click();document.body.removeChild(el);URL.revokeObjectURL(url);
 }
+
+// Messages
 function showErr(m){const el=document.getElementById('err');el.innerText=m;el.style.display='block';document.getElementById('succ').style.display='none';}
 function showSucc(m){const el=document.getElementById('succ');el.textContent=m;el.style.display='block';document.getElementById('err').style.display='none';}
 function clearMsg(){document.getElementById('err').style.display='none';document.getElementById('succ').style.display='none';}
+
+// Autosave (every 5 seconds)
+function saveForm(){
+  const fd=getFormData();
+  fd.participants=getParticipants();
+  localStorage.setItem('cre_form',JSON.stringify(fd));
+}
+function loadForm(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('cre_form')||'null');
+    if(!saved)return;
+    if(saved.participants&&saved.participants.length>0){
+      saved.participants.forEach(p=>addParticipant(p.nombre,p.cargo,p.asiste));
+    }
+  }catch(_){}
+}
+setInterval(saveForm,5000);
+
+// Keyboard shortcuts
+document.addEventListener('keydown',function(evt){
+  if((evt.ctrlKey||evt.metaKey)&&evt.key==='Enter'){evt.preventDefault();generate();}
+  if((evt.ctrlKey||evt.metaKey)&&evt.key==='s'){evt.preventDefault();if(acta)downloadDoc();}
+});
+
+// App-level tab switching
+function switchAppTab(t,btn){
+  document.getElementById('tab-actas').style.display=t==='actas'?'':'none';
+  document.getElementById('tab-resumen').style.display=t==='resumen'?'block':'none';
+  document.querySelectorAll('.app-nav-tab').forEach(b=>b.classList.toggle('active',b===btn));
+}
+
+// ============================================================
+// RESUMEN DE REUNIONES
+// ============================================================
+let resTranscripts=[];
+const MAX_TRANSCRIPTS=22;
+let resData=null;
+
+function renderResTranscripts(){
+  const list=document.getElementById('res-transcript-list');
+  if(!resTranscripts.length){list.innerHTML='';return;}
+  list.innerHTML=resTranscripts.map((t,i)=>
+    '<div class="res-transcript-item">'+
+      '<div class="res-transcript-hdr">'+
+        '<span style="font-size:12px;">'+(t.docxName?'&#128196;':'&#127963;')+'</span>'+
+        '<input type="text" value="'+e(t.name)+'" placeholder="Nombre de la Asamblea Local..." oninput="resTranscripts['+i+'].name=this.value">'+
+        '<button class="btn-del-transcript" onclick="delTranscript('+i+')" title="Eliminar">&#10005;</button>'+
+      '</div>'+
+      '<div class="res-transcript-body">'+
+        (t.docxName?'<div style="font-size:10px;color:#0369a1;margin-bottom:4px;padding:3px 6px;background:#e0f2fe;border-radius:4px;">&#128196; '+e(t.docxName)+'</div>':'')+
+        '<textarea placeholder="Texto del acta o transcripci\u00f3n\u2026" oninput="resTranscripts['+i+'].text=this.value" style="min-height:60px;">'+e(t.text)+'</textarea>'+
+      '</div>'+
+    '</div>'
+  ).join('');
+}
+
+// ── Bulk file handling ──────────────────────────────────────
+let _pdfWorkerSet=false;
+function ensurePdfWorker(){
+  if(_pdfWorkerSet)return;
+  if(window.pdfjsLib){
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    _pdfWorkerSet=true;
+  }
+}
+
+async function extractFileText(file){
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(ext==='docx'||ext==='doc'){
+    const ab=await file.arrayBuffer();
+    const r=await mammoth.extractRawText({arrayBuffer:ab});
+    return r.value||'';
+  }
+  if(ext==='pdf'){
+    ensurePdfWorker();
+    if(!window.pdfjsLib)throw new Error('pdf.js no disponible');
+    const ab=await file.arrayBuffer();
+    const pdf=await window.pdfjsLib.getDocument({data:new Uint8Array(ab)}).promise;
+    let text='';
+    for(let p=1;p<=pdf.numPages;p++){
+      const pg=await pdf.getPage(p);
+      const tc=await pg.getTextContent();
+      text+=tc.items.map(i=>i.str).join(' ')+'\n';
+    }
+    return text;
+  }
+  throw new Error('Formato no soportado: '+ext);
+}
+
+function fileToAssemblyName(fname){
+  return fname
+    .replace(/\.(docx?|pdf)$/i,'')
+    .replace(/[_\-]/g,' ')
+    .replace(/\s*acta\s*/gi,' ')
+    .replace(/\s+/g,' ')
+    .trim()||fname;
+}
+
+async function processBulkFiles(files){
+  const arr=Array.from(files).slice(0,MAX_TRANSCRIPTS);
+  if(!arr.length)return;
+  const bulkZone=document.getElementById('res-bulk-zone');
+  bulkZone.style.pointerEvents='none';
+  document.getElementById('btn-gen-resumen').disabled=true;
+  document.getElementById('resumen-err').style.display='none';
+  const badge=document.getElementById('res-bulk-count');
+  badge.textContent='Cargando '+arr.length+' archivo'+(arr.length>1?'s\u2026':'\u2026');
+  badge.style.background='#fef9c3';badge.style.color='#92400e';
+  badge.style.display='inline-block';
+  let loaded=0;
+  const errors=[];
+  const newEntries=[];
+  await Promise.all(arr.map(async f=>{
+    try{
+      const text=await extractFileText(f);
+      newEntries.push({name:fileToAssemblyName(f.name),text,docxName:f.name});
+      loaded++;
+    }catch(err){errors.push(f.name+': '+err.message);}
+  }));
+  // Sort by filename for consistent order
+  newEntries.sort((a,b)=>a.docxName.localeCompare(b.docxName,undefined,{numeric:true}));
+  // Keep manual (no-file) entries; append new file entries
+  resTranscripts=[...resTranscripts.filter(t=>!t.docxName),...newEntries];
+  badge.textContent=loaded+' archivo'+(loaded!==1?'s':'')+(loaded!==1?' cargados':' cargado');
+  badge.style.background=errors.length?'#fee2e2':'#dcfce7';
+  badge.style.color=errors.length?'#dc2626':'#15803d';
+  if(errors.length)showResErr('Errores al cargar: '+errors.join('; '));
+  bulkZone.style.pointerEvents='';
+  document.getElementById('btn-gen-resumen').disabled=false;
+  renderResTranscripts();
+}
+
+function resBulkDragOver(ev){ev.preventDefault();ev.stopPropagation();document.getElementById('res-bulk-zone').classList.add('drag-over');}
+function resBulkDragLeave(){document.getElementById('res-bulk-zone').classList.remove('drag-over');}
+function resBulkDrop(ev){
+  ev.preventDefault();ev.stopPropagation();
+  document.getElementById('res-bulk-zone').classList.remove('drag-over');
+  processBulkFiles(ev.dataTransfer.files);
+}
+function resBulkFileChange(inp){processBulkFiles(inp.files);inp.value='';}
+
+function addTranscript(){
+  if(resTranscripts.length>=MAX_TRANSCRIPTS)return;
+  resTranscripts.push({name:'Asamblea Local '+(resTranscripts.length+1),text:'',docxName:''});
+  renderResTranscripts();
+}
+
+function delTranscript(i){
+  resTranscripts.splice(i,1);
+  renderResTranscripts();
+}
+
+const SYS_RESUMEN=`Eres un experto en an\u00e1lisis de reuniones institucionales de Cruz Roja Madrid.
+Analiza las actas de las Asambleas Locales y genera un informe estructurado en JSON.
+REGLAS: Devuelve SOLO JSON v\u00e1lido. Sin backticks. Sin texto adicional.
+"logros": acuerdos alcanzados, actividades completadas, compromisos cumplidos, aspectos positivos, buenas pr\u00e1cticas. M\u00e1x 6 items.
+"mejoras": retos identificados, incidencias, necesidades de recursos, aspectos que requieren atenci\u00f3n/seguimiento. M\u00e1x 6 items.
+Frases concisas en tono institucional formal.
+JSON: {"titulo":"RESUMEN DE REUNIONES - ASAMBLEAS LOCALES","periodo":"","reuniones":[{"nombre":"Nombre Asamblea","logros":["logro 1"],"mejoras":["mejora 1"]}],"conclusiones_globales":["conclusi\u00f3n 1"]}`;
+
+async function generateResumen(){
+  const key=keyEnabled?keyEl.value.trim():'';
+  if(!key){showResErr('Configura tu API Key de Anthropic primero (bot\u00f3n \u2699\uFE0F Configuraci\u00f3n API).');return;}
+  const filled=resTranscripts.filter(t=>t.text.trim());
+  if(!filled.length){showResErr('A\u00f1ade al menos un acta con contenido (texto o Word subido).');return;}
+  const btn=document.getElementById('btn-gen-resumen');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Analizando actas...';
+  document.getElementById('resumen-err').style.display='none';
+  document.getElementById('res-preview-panel').style.display='none';
+  const titulo=document.getElementById('res-titulo').value.trim()||'RESUMEN DE REUNIONES - ASAMBLEAS LOCALES';
+  const periodo=document.getElementById('res-periodo').value.trim();
+  const responsable=document.getElementById('res-responsable').value.trim()||'David Martin Requena \u2013 RT Gesti\u00f3n T\u00e9cnica';
+  const prompt='T\u00cdTULO: '+titulo+'\nPER\u00cdODO: '+periodo+'\n\n'+
+    filled.map(t=>'=== ASAMBLEA LOCAL: '+t.name+' ===\n'+t.text).join('\n\n---\n\n');
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:8192,system:SYS_RESUMEN,messages:[{role:'user',content:'Analiza estas actas de Asambleas Locales de Cruz Roja Madrid y devuelve el JSON:\n\n'+prompt}]})
+    });
+    if(!resp.ok){const er=await resp.json().catch(()=>({}));throw new Error(er.error?.message||'Error HTTP '+resp.status);}
+    const data=await resp.json();
+    const raw=(data.content?.find(c=>c.type==='text')?.text||'{}').replace(/```json|```/g,'').trim();
+    resData=JSON.parse(raw);
+    resData.titulo=titulo||resData.titulo||'RESUMEN DE REUNIONES - ASAMBLEAS LOCALES';
+    resData.periodo=periodo||resData.periodo||'';
+    resData.responsable=responsable;
+    renderResumen(resData);
+    document.getElementById('res-preview-panel').style.display='block';
+  }catch(err){
+    let m=err.message;
+    if(m.includes('401')||m.includes('authentication'))m='API Key incorrecta.';
+    else if(m.includes('credit')||m.includes('billing'))m='Cr\u00e9dito agotado en console.anthropic.com';
+    else if(m.includes('JSON'))m='Error al procesar la respuesta. Intenta de nuevo.';
+    showResErr(m);
+  }
+  btn.disabled=false;btn.innerHTML='&#10024; Generar Resumen';
+}
+
+function renderResumen(data){
+  const pc=document.getElementById('res-preview-content');
+  const reuniones=(data.reuniones||[]).map((r,idx)=>{
+    const logros=(r.logros||[]).map(l=>'<div class="res-item res-logro">'+e(l)+'</div>').join('');
+    const mejoras=(r.mejoras||[]).map(m=>'<div class="res-item res-mejora">'+e(m)+'</div>').join('');
+    return '<div class="res-asamblea">'+
+      '<div class="res-asamblea-hdr">'+
+        '<div class="res-asamblea-num">'+(idx+1)+'</div>'+
+        '<span>'+e((r.nombre||'').toUpperCase())+'</span>'+
+      '</div>'+
+      '<div class="res-asamblea-body">'+
+        '<div class="res-section logros-sec">'+
+          '<div class="res-section-title logros-lbl">&#10003; Logros y aspectos positivos</div>'+
+          (logros||'<div class="res-item" style="color:#9ca3af;font-style:italic;">Sin logros registrados</div>')+
+        '</div>'+
+        '<div class="res-section mejoras-sec">'+
+          '<div class="res-section-title mejoras-lbl">&#9658; Aspectos a mejorar</div>'+
+          (mejoras||'<div class="res-item" style="color:#9ca3af;font-style:italic;">Sin aspectos registrados</div>')+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+  const globales=(data.conclusiones_globales&&data.conclusiones_globales.length)?
+    '<div class="res-global">'+
+      '<div class="res-global-title">&#127758; Conclusiones Globales</div>'+
+      data.conclusiones_globales.map(c=>'<div class="res-global-item">'+e(c)+'</div>').join('')+
+    '</div>':'';
+  pc.innerHTML=
+    '<div class="res-out-logo-bar">'+
+      '<img class="res-out-logo" src="data:image/jpeg;base64,'+LOGO+'" alt="Cruz Roja">'+
+      '<div>'+
+        '<div class="res-out-org-name">Cruz Roja Madrid</div>'+
+        '<div class="res-out-org-sub">'+e(data.responsable||'')+'</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="res-out-main-title">'+e(data.titulo||'RESUMEN DE REUNIONES')+'</div>'+
+    (data.periodo?'<div class="res-out-period">Per\u00edodo: '+e(data.periodo)+'</div>':'')+
+    reuniones+globales;
+}
+
+// Download resumen as .docx
+function downloadResumenDoc(){
+  if(!resData)return;
+  const data=resData;
+  const f='font-family:Montserrat,Arial;';
+  const reuniones=(data.reuniones||[]).map((r,idx)=>{
+    const logros=(r.logros||[]).map(l=>'<p style="'+f+'font-size:10pt;color:'+DARK+';margin:2pt 0 2pt 10pt;">&#10003; '+e(l)+'</p>').join('');
+    const mejoras=(r.mejoras||[]).map(m=>'<p style="'+f+'font-size:10pt;color:'+DARK+';margin:2pt 0 2pt 10pt;">&#9658; '+e(m)+'</p>').join('');
+    return '<table style="width:100%;border-collapse:collapse;margin-bottom:10pt;">'+
+      '<tr><td colspan="2" style="background:'+NAVY+';padding:5pt 8pt;">'+
+        '<p style="'+f+'font-size:11pt;color:#fff;font-weight:bold;margin:0;">'+(idx+1)+'. '+e((r.nombre||'').toUpperCase())+'</p>'+
+      '</td></tr>'+
+      '<tr>'+
+        '<td style="width:50%;vertical-align:top;border:1pt solid #e5e7eb;padding:7pt;">'+
+          '<p style="'+f+'font-size:8pt;color:#15803d;font-weight:bold;margin:0 0 4pt;background:#dcfce7;padding:2pt 5pt;">&#10003; LOGROS Y ASPECTOS POSITIVOS</p>'+
+          (logros||'<p style="'+f+'font-size:10pt;color:#9ca3af;font-style:italic;">Sin logros registrados</p>')+
+        '</td>'+
+        '<td style="width:50%;vertical-align:top;border:1pt solid #e5e7eb;background:'+GREY+';padding:7pt;">'+
+          '<p style="'+f+'font-size:8pt;color:#b45309;font-weight:bold;margin:0 0 4pt;background:#fef3c7;padding:2pt 5pt;">&#9658; ASPECTOS A MEJORAR</p>'+
+          (mejoras||'<p style="'+f+'font-size:10pt;color:#9ca3af;font-style:italic;">Sin aspectos registrados</p>')+
+        '</td>'+
+      '</tr>'+
+    '</table>';
+  }).join('');
+  const globales=(data.conclusiones_globales&&data.conclusiones_globales.length)?
+    '<p style="margin:10pt 0 0;">&nbsp;</p>'+
+    '<table style="width:100%;border-collapse:collapse;">'+
+      '<tr><td style="background:#0369a1;padding:5pt 8pt;">'+
+        '<p style="'+f+'font-size:11pt;color:#fff;font-weight:bold;margin:0;">&#127758; CONCLUSIONES GLOBALES</p>'+
+      '</td></tr>'+
+      '<tr><td style="border:1pt solid #bae6fd;background:#f0f9ff;padding:8pt;">'+
+        data.conclusiones_globales.map(c=>'<p style="'+f+'font-size:10pt;color:'+DARK+';margin:2pt 0 2pt 10pt;">&#8594; '+e(c)+'</p>').join('')+
+      '</td></tr>'+
+    '</table>':'';
+  const doc='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">'+
+    '<head><meta charset="utf-8"><style>@page{size:21cm 29.7cm;margin:2.5cm 2.0cm 2.0cm 2.0cm;}body{font-family:Montserrat,Arial;font-size:10pt;color:'+DARK+';margin:0;}table{border-collapse:collapse;width:100%;}p{margin:0;line-height:1.4;}</style></head>'+
+    '<body>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:7pt;border-bottom:2pt solid '+RED+';margin-bottom:12pt;">'+
+      '<img src="data:image/jpeg;base64,'+LOGO+'" style="height:26pt;" alt="Cruz Roja"/>'+
+      '<div style="text-align:right;">'+
+        '<p style="'+f+'font-size:10pt;font-weight:bold;color:'+NAVY+';margin:0;">Cruz Roja Madrid</p>'+
+        '<p style="'+f+'font-size:8pt;color:#6b7280;margin:0;">'+e(data.responsable||'')+'</p>'+
+      '</div>'+
+    '</div>'+
+    '<p style="'+f+'font-size:15pt;font-weight:bold;color:'+NAVY+';margin:0 0 3pt;text-transform:uppercase;">'+e(data.titulo||'RESUMEN DE REUNIONES')+'</p>'+
+    (data.periodo?'<p style="'+f+'font-size:10pt;color:#6b7280;margin:0 0 12pt;">Per\u00edodo: '+e(data.periodo)+'</p>':'<p style="margin:0 0 12pt;">&nbsp;</p>')+
+    reuniones+globales+
+    '</body></html>';
+  const blob=new Blob(['\ufeff',doc],{type:'application/msword'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  const per=(data.periodo||'').replace(/[^a-zA-Z\u00C0-\u024F0-9]/g,'_').replace(/_+/g,'_').slice(0,20);
+  a.download='Resumen_AALL'+(per?'_'+per:'')+'.doc';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// Export resumen as PDF
+async function exportResumenPdf(){
+  if(!resData)return;
+  const previewEl=document.getElementById('res-preview-content');
+  const btn=document.getElementById('btn-res-pdf');
+  const origText=btn.innerHTML;
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>PDF...';
+  try{
+    const canvas=await html2canvas(previewEl,{scale:2,useCORS:true,backgroundColor:'#ffffff',logging:false});
+    const imgData=canvas.toDataURL('image/png');
+    const jsPDFLib=window.jspdf||window.jsPDF;
+    const {jsPDF}=jsPDFLib||{};
+    if(!jsPDF){window.print();return;}
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const pageW=pdf.internal.pageSize.getWidth();
+    const pageH=pdf.internal.pageSize.getHeight();
+    const margin=10;
+    const maxW=pageW-margin*2;
+    const ratio=canvas.width/maxW;
+    const fullImgH=canvas.height/ratio;
+    const maxImgHPerPage=pageH-margin*2;
+    if(fullImgH<=maxImgHPerPage){
+      pdf.addImage(imgData,'PNG',margin,margin,maxW,fullImgH);
+    }else{
+      const rowPx=Math.floor(maxImgHPerPage*ratio);
+      let srcY=0;
+      while(srcY<canvas.height){
+        const sliceH=Math.min(rowPx,canvas.height-srcY);
+        const tmp=document.createElement('canvas');
+        tmp.width=canvas.width;tmp.height=sliceH;
+        tmp.getContext('2d').drawImage(canvas,0,srcY,canvas.width,sliceH,0,0,canvas.width,sliceH);
+        const sliceImg=tmp.toDataURL('image/png');
+        const sliceMmH=sliceH/ratio;
+        pdf.addImage(sliceImg,'PNG',margin,margin,maxW,sliceMmH);
+        srcY+=sliceH;
+        if(srcY<canvas.height)pdf.addPage();
+      }
+    }
+    const per=(resData?.periodo||'').replace(/[^a-zA-Z\u00C0-\u024F0-9]/g,'_').replace(/_+/g,'_').slice(0,20);
+    pdf.save('Resumen_AALL'+(per?'_'+per:'')+'.pdf');
+  }catch(err){
+    window.print();
+  }
+  btn.disabled=false;btn.innerHTML=origText;
+}
+
+// Email resumen (downloads PDF first, then opens mailto)
+async function sendResumenEmail(){
+  if(!resData)return;
+  // Download PDF first
+  await exportResumenPdf();
+  const titulo=resData.titulo||'Resumen de Reuniones - Asambleas Locales';
+  const periodo=resData.periodo?(' - '+resData.periodo):'';
+  const subject='Informe: '+titulo+periodo;
+  const mes=resData.periodo||'[mes correspondiente]';
+  const body='Buenas tardes,\n\nAdjunto un resumen de los principales aspectos recogidos y resumidos de las actas enviadas por los RL de sus reuniones del mes de '+mes+'.\n\nCualquier cosa, estoy a vuestra disposici\u00f3n.\n\nUn saludo';
+  setTimeout(()=>{window.location.href='mailto:?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);},800);
+}
+
+function showResErr(m){
+  const el=document.getElementById('resumen-err');
+  el.textContent=m;el.style.display='block';
+}
+
+// Init
+renderContacts();
+loadForm();
+renderResTranscripts();
 </script>
 </body>
 </html>
